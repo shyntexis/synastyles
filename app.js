@@ -226,9 +226,13 @@ if (emailForm) {
     checkoutMode = me ? (me.checkoutMode === 'live' ? 'live' : 'demo') : 'offline';
     if (me && me.loggedIn && me.user && emailInput) { emailInput.value = me.user.email; }
     if (checkoutMode === 'live') {
-      if (legalTermsText) legalTermsText.textContent = 'Ich akzeptiere, dass ich digitale Inhalte kaufe, die nach der Zahlung bereitgestellt werden.';
+      if (legalTermsText) legalTermsText.textContent = 'Ich verlange ausdrücklich, dass mit der Bereitstellung der digitalen Inhalte sofort nach der Zahlung begonnen wird. Mir ist bekannt, dass mein Widerrufsrecht mit Beginn der Bereitstellung erlischt.';
       if (checkoutSubmit) checkoutSubmit.textContent = 'Sicher bezahlen';
-      setStatus('Du wirst zur sicheren Stripe-Bezahlseite weitergeleitet.', null);
+      let liveNote = 'Du wirst zur sicheren Stripe-Bezahlseite weitergeleitet. Nach der Zahlung bekommst du einen persönlichen Zugangslink zu deinen Plänen.';
+      if (me && me.googleConfigured === false) {
+        liveNote += ' Ein Google-Login ist dafür nicht nötig — der Konto-Login ist optional und derzeit nicht eingerichtet.';
+      }
+      setStatus(liveNote, null);
     } else {
       if (legalTermsText) legalTermsText.textContent = 'Mir ist klar, dass dies ein Vorschau-/Demo-Modus ist und keine echte Zahlung ausgelöst wird.';
       if (checkoutSubmit) checkoutSubmit.textContent = 'Bestellung prüfen';
@@ -249,10 +253,11 @@ if (emailForm) {
     event.preventDefault();
     const emailInput = $('checkoutEmail');
     const legalContent = $('legalContent');
+    const legalAccept = $('legalAccept');
     const legalTerms = $('legalTerms');
     const email = emailInput ? emailInput.value.trim() : '';
     if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { setStatus('Bitte gib eine gültige E-Mail-Adresse ein.', 'error'); if (emailInput) emailInput.focus(); return; }
-    if (!legalContent || !legalContent.checked || !legalTerms || !legalTerms.checked) { setStatus('Bitte bestätige beide Hinweise, um fortzufahren.', 'error'); return; }
+    if (!legalContent || !legalContent.checked || !legalAccept || !legalAccept.checked || !legalTerms || !legalTerms.checked) { setStatus('Bitte bestätige alle Hinweise, um fortzufahren.', 'error'); return; }
     const ids = getCart();
     if (!ids.length) { setStatus('Dein Warenkorb ist leer.', 'error'); return; }
 

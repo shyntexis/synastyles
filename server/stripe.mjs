@@ -5,6 +5,9 @@ const API = 'https://api.stripe.com/v1';
 
 export function stripeConfigured() { return !!process.env.STRIPE_SECRET_KEY; }
 
+// Only reports whether the signing secret is present — never the value itself.
+export function webhookConfigured() { return !!process.env.STRIPE_WEBHOOK_SECRET; }
+
 function authHeaders() { return { Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}` }; }
 
 async function post(path, params) {

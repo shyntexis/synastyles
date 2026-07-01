@@ -136,6 +136,7 @@ function statusPayload(req) {
   return {
     mode: hasSecret && missing.length === 0 ? 'live' : 'demo',
     stripe: hasSecret,
+    webhookConfigured: stripe.webhookConfigured(),
     missingPriceEnvKeys: missing,
     googleConfigured: auth.googleConfigured(),
     devAuth: auth.devAuthEnabled(),

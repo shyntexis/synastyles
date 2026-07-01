@@ -252,7 +252,8 @@
         <label for="checkoutEmail">E-Mail für die Lieferung</label>
         <input id="checkoutEmail" type="email" required placeholder="deine@email.de" autocomplete="email" />
         <label class="check"><input type="checkbox" id="legalContent" required /><span>Ich verstehe, dass es sich um digitale Inhalte mit allgemeinen Fitness- und Trainingsinformationen handelt — keine medizinische Beratung und keine garantierten Ergebnisse.</span></label>
-        <label class="check"><input type="checkbox" id="legalTerms" required /><span id="legalTermsText">Mir ist klar, dass der Shop noch in Vorbereitung ist und ein echter Kauf erst nach der Live-Schaltung möglich ist.</span></label>
+        <label class="check"><input type="checkbox" id="legalAccept" required /><span>Ich habe die <a href="agb.html" target="_blank" rel="noopener">AGB</a>, die <a href="datenschutz.html" target="_blank" rel="noopener">Datenschutzerklärung</a> und die <a href="widerruf.html" target="_blank" rel="noopener">Widerrufsbelehrung</a> gelesen und akzeptiere sie.</span></label>
+        <label class="check"><input type="checkbox" id="legalTerms" required /><span id="legalTermsText">Ich verlange ausdrücklich, dass mit der Bereitstellung der digitalen Inhalte sofort nach der Zahlung begonnen wird. Mir ist bekannt, dass mein Widerrufsrecht mit Beginn der Bereitstellung erlischt.</span></label>
         <button class="button primary full" type="submit" id="checkoutSubmit">Weiter</button>
         <p class="checkout-status" id="checkoutStatus"></p>
       </form>
@@ -267,12 +268,18 @@
         <span class="brand-mark" aria-hidden="true"><span class="z-sigil"></span></span>
         <div><strong>ZENITH</strong><p>Gym Coaching</p></div>
       </div>
-      <div class="footer-links"><a href="#pakete">Pakete</a><a href="#add-ons">Mini-Pläne</a><a href="#ablauf">Ablauf</a><a href="#kontakt">Kontakt</a><a href="https://www.tiktok.com/@tristymindagym" target="_blank" rel="noopener">TikTok</a></div>
+      <div class="footer-links"><a href="#pakete">Pakete</a><a href="#add-ons">Mini-Pläne</a><a href="#ablauf">Ablauf</a><a href="#kontakt">Kontakt</a><a href="account.html">Konto</a><a href="https://www.tiktok.com/@tristymindagym" target="_blank" rel="noopener">TikTok</a></div>
     </div>
     <div class="footer-legal">
-      <strong>Impressum &amp; Kontakt</strong>
+      <strong>Rechtliches &amp; Kontakt</strong>
       <p>Verantwortlich: Tristan · Kontakt: <a href="mailto:synastyles@gmail.com">synastyles@gmail.com</a></p>
-      <p class="legal-note">Hinweis: Diese Seite ist noch in Vorbereitung. Stripe-Checkout und geschützter Käuferzugriff sind technisch vorbereitet; vor öffentlicher Live-Schaltung müssen vollständiges Impressum, Datenschutz, AGB/Widerruf und Google-Login-Konfiguration ergänzt werden. Dies ist noch kein vollständiges Impressum im rechtlichen Sinne.</p>
+      <div class="footer-legal-links">
+        <a href="impressum.html">Impressum</a>
+        <a href="datenschutz.html">Datenschutz</a>
+        <a href="agb.html">AGB</a>
+        <a href="widerruf.html">Widerruf</a>
+      </div>
+      <p class="legal-note">Hinweis: Impressum, Datenschutzerklärung, AGB und Widerrufsbelehrung sind angelegt. Einzelne Pflichtfelder (Name, Anschrift, Steuerangaben) sind dort deutlich als „BITTE ERGÄNZEN" markiert und müssen vom Betreiber vor dem öffentlichen Verkauf mit echten Daten vervollständigt werden. Dies ersetzt keine Rechtsberatung.</p>
     </div>
   </footer>
 

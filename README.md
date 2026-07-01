@@ -1,7 +1,8 @@
 # ZENITH Gym Coaching — Plattform
 
-Premium Black/Gold Coaching-Seite mit echten Plänen, Warenkorb, **Stripe-Checkout**, **Google-Login**,
-Käuferkonten und **geschützter, personalisierter Plan-Auslieferung**.
+Premium Black/Gold Coaching-Seite mit echten Plänen, Warenkorb, **Stripe-Checkout**,
+direkten Käufer-Zugangslinks und **geschützter, personalisierter Plan-Auslieferung**.
+Google-Login ist optionaler Konto-Komfort, aber kein Kauf-Blocker.
 
 Projektordner: `C:\Users\Tristan\Desktop\2026-06-30_tristym-gym-coaching-site`
 
@@ -20,7 +21,7 @@ Ein reiner Static-Host reicht **nicht** — Auth/Stripe/Webhooks/geschützte Pl�
 
 ```
 index.html / styles.css / app.js   Landingpage + Warenkorb/Checkout (Premium Black/Gold)
-account.html                       Konto-Dashboard (Google-Login, Käufe, Plan öffnen)
+account.html                       Konto-Dashboard (optionaler Google-Login, Käufe, Plan öffnen)
 checkout-success.html / -cancel.html  Stripe Erfolg/Abbruch
 data/products.json                 Produktdaten (Preise = einzige Quelle der Wahrheit)
 data/video-workflow.json           Video-Pipeline-Daten

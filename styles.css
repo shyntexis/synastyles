@@ -289,6 +289,8 @@ li::before { content: ""; position: absolute; left: 0; top: .3em; width: 16px; h
 .checkout-form input[type="email"]:focus { outline: none; border-color: var(--gold); }
 .checkout-form .check { display: flex; gap: 11px; align-items: flex-start; font-weight: 500; font-size: 13.5px; line-height: 1.45; color: var(--muted); cursor: pointer; }
 .checkout-form .check input { margin-top: 2px; width: 18px; height: 18px; accent-color: var(--gold); flex: 0 0 auto; }
+.checkout-form .check a { color: var(--gold2); text-decoration: underline; }
+.checkout-form .check a:hover { color: #fff; }
 .checkout-status { margin: 4px 0 0; font-size: 13.5px; line-height: 1.55; color: var(--soft); }
 .checkout-status.demo { color: var(--gold2); }
 .checkout-status.error { color: #ff9d8d; }
@@ -307,3 +309,29 @@ button.addon-card { font: inherit; color: inherit; text-align: left; cursor: poi
   .cart-button { padding: 0 13px; min-height: 44px; }
   .cart-drawer { grid-template-columns: 0 1fr; }
 }
+
+/* ---- Rechtliche Seiten (Impressum / Datenschutz / AGB / Widerruf) ---- */
+.legal-wrap { width: min(820px, calc(100vw - 36px)); margin: 0 auto; padding: 0 0 40px; }
+.legal-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 22px 0 10px; }
+.legal-head .brand { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; color: var(--ink); }
+.legal-head .brand-mark { width: 38px; height: 38px; }
+.legal-card { padding: clamp(22px, 4vw, 40px); border: 1px solid var(--card-line); border-radius: 24px; background: linear-gradient(180deg, rgba(255, 255, 255, .05), rgba(255, 255, 255, .02)); box-shadow: var(--shadow); }
+.legal-card h1 { font-size: clamp(28px, 5vw, 40px); letter-spacing: -.03em; line-height: 1.05; margin: 10px 0 0; }
+.legal-card h2 { margin: 34px 0 0; font-size: 21px; letter-spacing: -.01em; color: var(--ink); }
+.legal-card h3 { margin: 22px 0 0; font-size: 16px; color: var(--gold2); }
+.legal-card p, .legal-card li { color: var(--muted); font-size: 15.5px; line-height: 1.7; }
+.legal-card p { margin: 12px 0 0; }
+.legal-card ul { margin: 12px 0 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.legal-card ul li { position: relative; padding-left: 22px; }
+.legal-card ul li::before { content: ""; position: absolute; left: 0; top: .55em; width: 8px; height: 8px; border-radius: 50%; background: radial-gradient(circle, var(--gold2), var(--amber)); box-shadow: none; }
+.legal-card a { color: var(--gold2); }
+.legal-card address { font-style: normal; color: var(--ink); line-height: 1.7; }
+.legal-updated { margin-top: 8px; color: var(--soft); font-size: 13px; }
+.legal-toc { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 10px; }
+.legal-toc a { padding: 7px 13px; border-radius: 999px; border: 1px solid var(--card-line); background: rgba(255, 255, 255, .04); color: var(--muted); font-size: 13px; font-weight: 700; text-decoration: none; }
+.legal-toc a:hover { color: var(--ink); }
+.todo-field { display: inline-block; padding: 1px 8px; border-radius: 6px; border: 1px dashed #ff9d8d; background: rgba(255, 120, 100, .1); color: #ffb9ad; font-weight: 700; font-size: .92em; }
+.todo-note { margin-top: 18px; padding: 14px 16px; border: 1px solid rgba(255, 157, 141, .4); border-left: 3px solid #ff9d8d; border-radius: 12px; background: rgba(255, 120, 100, .07); color: #ffcabf; font-size: 13.5px; line-height: 1.6; }
+.legal-back { margin-top: 26px; display: flex; flex-wrap: wrap; gap: 12px; }
+.footer-legal-links { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 14px; }
+.footer-legal-links a { color: var(--gold2); font-size: 14px; }
