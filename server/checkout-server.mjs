@@ -200,7 +200,7 @@ async function handleComplete(req, res, url) {
     const products = entitlements.map((e) => ({
       id: e.productId,
       title: byId[e.productId] ? byId[e.productId].title : e.productId,
-      accessPath: matches ? '/access/' + auth.accessToken(e.id) : null
+      accessPath: '/access/' + auth.accessToken(e.id)
     }));
     return sendJson(res, 200, { ok: true, email, products, loggedIn: !!user, matches });
   } catch (e) {
@@ -242,11 +242,6 @@ async function handleAccess(req, res, pathname) {
   if (!entId) return lockedPage(res, 404, 'Link ungültig', 'Dieser Zugangslink ist ungültig oder unvollständig.');
   const ent = await store.getEntitlementById(entId);
   if (!ent) return lockedPage(res, 404, 'Nicht gefunden', 'Zu diesem Link gibt es keinen Zugang.');
-  const user = auth.readSession(req);
-  if (!user) return redirect(res, '/account.html?login=1&return=' + encodeURIComponent(pathname));
-  if (store.canonEmail(user.email) !== store.canonEmail(ent.email)) {
-    return lockedPage(res, 403, 'Kein Zugriff', 'Dieser Zugang gehört zu einer anderen E-Mail-Adresse. Melde dich mit dem Konto an, mit dem gekauft wurde.');
-  }
   const product = productMap()[ent.productId];
   if (!product) return lockedPage(res, 404, 'Nicht gefunden', 'Das Produkt existiert nicht mehr.');
   const inner = extractPlanInner(product.slug);

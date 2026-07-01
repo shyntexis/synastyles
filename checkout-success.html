@@ -68,7 +68,7 @@
         .then(d => {
           if (!d.ok) { fail(d.message || 'Wir konnten die Zahlung noch nicht bestätigen. Schau in einem Moment in deinem Konto nach.'); return; }
           title.textContent = 'Danke! Zahlung bestätigt.';
-          if (d.matches && d.products && d.products.some(p => p.accessPath)) {
+          if (d.products && d.products.some(p => p.accessPath)) {
             lead.textContent = 'Deine Pläne sind freigeschaltet:';
             rows.classList.remove('hidden');
             rows.innerHTML = d.products.map(p => `<div class="row"><strong>${esc(p.title)}</strong>${p.accessPath ? `<a href="${p.accessPath}">Plan öffnen</a>` : ''}</div>`).join('');
