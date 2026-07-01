@@ -51,7 +51,7 @@ export function readSession(req) {
   } catch (e) { return null; }
 }
 
-// ---- derived access token ----
+// ---- derived access token (v1: entitlement id + signature, needs a store lookup) ----
 export function accessToken(entitlementId) { return entitlementId + '.' + sign(entitlementId, 'access'); }
 export function verifyAccessToken(token) {
   if (!token || typeof token !== 'string') return null;
@@ -60,6 +60,38 @@ export function verifyAccessToken(token) {
   const id = token.slice(0, i); const sig = token.slice(i + 1);
   if (!safeEq(sig, sign(id, 'access'))) return null;
   return id;
+}
+
+// ---- delivery token (v2: stateless — carries email+productId+sessionId in the signed
+// payload itself, so /access/<token> works right after a paid Stripe session even if the
+// JSON store/disk was just reset or hasn't caught up yet. No DB lookup required to verify.
+// Old v1 tokens above keep working unchanged (distinguished by the "v2." prefix here). ----
+const DELIVERY_PREFIX = 'v2.';
+const canonLocal = (e) => String(e || '').trim().toLowerCase();
+
+export function makeDeliveryToken({ email, productId, sessionId }) {
+  const payload = b64url(JSON.stringify({
+    v: 2,
+    email: canonLocal(email),
+    pid: productId,
+    sid: sessionId || '',
+    iat: Math.floor(Date.now() / 1000)
+  }));
+  return DELIVERY_PREFIX + payload + '.' + sign(payload, 'delivery');
+}
+export function isDeliveryToken(token) { return typeof token === 'string' && token.startsWith(DELIVERY_PREFIX); }
+export function verifyDeliveryToken(token) {
+  if (!isDeliveryToken(token)) return null;
+  const rest = token.slice(DELIVERY_PREFIX.length);
+  const i = rest.lastIndexOf('.');
+  if (i < 0) return null;
+  const payload = rest.slice(0, i); const sig = rest.slice(i + 1);
+  if (!safeEq(sig, sign(payload, 'delivery'))) return null;
+  try {
+    const o = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8'));
+    if (!o.email || !o.pid) return null;
+    return { email: o.email, productId: o.pid, sessionId: o.sid || '', issuedAt: o.iat || null };
+  } catch (e) { return null; }
 }
 
 // ---- oauth state (return path, signed, open-redirect-safe) ----

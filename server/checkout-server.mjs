@@ -137,6 +137,7 @@ function statusPayload(req) {
     mode: hasSecret && missing.length === 0 ? 'live' : 'demo',
     stripe: hasSecret,
     webhookConfigured: stripe.webhookConfigured(),
+    accessTokens: 'signed-v2',
     missingPriceEnvKeys: missing,
     googleConfigured: auth.googleConfigured(),
     devAuth: auth.devAuthEnabled(),
@@ -196,13 +197,16 @@ async function handleComplete(req, res, url) {
     const email = (s.customer_details && s.customer_details.email) || s.customer_email || (s.metadata && s.metadata.email) || '';
     const productIds = String((s.metadata && s.metadata.product_ids) || '').split(',').map((x) => x.trim()).filter((id) => byId[id]);
     if (!email || !productIds.length) return sendJson(res, 200, { ok: false, message: 'Bestelldaten unvollständig.' });
+    // Store fulfillment still runs (account dashboard, idempotency, webhook backstop),
+    // but the access link itself is a stateless v2 token derived from the verified Stripe
+    // session — it works even if the JSON store/disk didn't persist this write.
     const { entitlements } = await store.fulfillSession(sid, email, productIds);
     const user = auth.readSession(req);
     const matches = !!user && store.canonEmail(user.email) === store.canonEmail(email);
     const products = entitlements.map((e) => ({
       id: e.productId,
       title: byId[e.productId] ? byId[e.productId].title : e.productId,
-      accessPath: '/access/' + auth.accessToken(e.id)
+      accessPath: '/access/' + auth.makeDeliveryToken({ email, productId: e.productId, sessionId: sid })
     }));
     return sendJson(res, 200, { ok: true, email, products, loggedIn: !!user, matches });
   } catch (e) {
@@ -238,17 +242,30 @@ async function handleMe(req, res) {
   return sendJson(res, 200, { loggedIn: true, user: { email: user.email, name: user.name, picture: user.picture }, products, ...base });
 }
 
+function renderAccessForProductEmail(res, productId, email) {
+  const product = productMap()[productId];
+  if (!product) return lockedPage(res, 404, 'Nicht gefunden', 'Das Produkt existiert nicht mehr.');
+  const inner = extractPlanInner(product.slug);
+  if (!inner) return lockedPage(res, 500, 'Inhalt fehlt', 'Der Planinhalt konnte nicht geladen werden.');
+  return renderAccessPage(res, product, email, inner);
+}
+
 async function handleAccess(req, res, pathname) {
   const token = decodeURIComponent(pathname.slice('/access/'.length));
+
+  // v2: stateless, self-verifying — no store lookup needed.
+  if (auth.isDeliveryToken(token)) {
+    const d = auth.verifyDeliveryToken(token);
+    if (!d) return lockedPage(res, 404, 'Link ungültig', 'Dieser Zugangslink ist ungültig oder unvollständig.');
+    return renderAccessForProductEmail(res, d.productId, d.email);
+  }
+
+  // v1: legacy entitlement-id token — still honored so old links never break.
   const entId = auth.verifyAccessToken(token);
   if (!entId) return lockedPage(res, 404, 'Link ungültig', 'Dieser Zugangslink ist ungültig oder unvollständig.');
   const ent = await store.getEntitlementById(entId);
   if (!ent) return lockedPage(res, 404, 'Nicht gefunden', 'Zu diesem Link gibt es keinen Zugang.');
-  const product = productMap()[ent.productId];
-  if (!product) return lockedPage(res, 404, 'Nicht gefunden', 'Das Produkt existiert nicht mehr.');
-  const inner = extractPlanInner(product.slug);
-  if (!inner) return lockedPage(res, 500, 'Inhalt fehlt', 'Der Planinhalt konnte nicht geladen werden.');
-  return renderAccessPage(res, product, ent.email, inner);
+  return renderAccessForProductEmail(res, ent.productId, ent.email);
 }
 
 // Google OAuth

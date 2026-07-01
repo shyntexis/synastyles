@@ -27,7 +27,7 @@ data/products.json                 Produktdaten (Preise = einzige Quelle der Wah
 data/video-workflow.json           Video-Pipeline-Daten
 products/plans/plan.css            Öffentliches Stylesheet der Plan-Seiten
 server/checkout-server.mjs         HTTP-Server: Static + alle APIs + /access-Auslieferung
-server/auth.mjs                    Session-Cookies, abgeleitete Access-Tokens, OAuth-State
+server/auth.mjs                    Session-Cookies, signierte Access-/Delivery-Tokens (v1+v2), OAuth-State
 server/store.mjs                   JSON-Store (users/entitlements) — atomar, never-crash
 server/stripe.mjs                  Stripe REST (Checkout-Session, Webhook-Verify)
 server/private/plans/*.html|*.md   VOLLE Käuferinhalte (NICHT öffentlich ausgeliefert)
@@ -43,15 +43,27 @@ VIDEO_WORKFLOW.md                  KI-Coaching-Video-Produktion (Leitfaden)
 1. Plan in den Warenkorb → Checkout → **Stripe** (echte Zahlung, sobald Keys gesetzt).
 2. Stripe leitet zu `checkout-success.html?session_id=…`; der Server verifiziert die Zahlung
    (`/api/checkout/complete`) und/oder per **Webhook** und legt das Entitlement an (idempotent).
-3. Käufer meldet sich mit **derselben Google-E-Mail** an (`account.html`).
-4. Im Konto: „Plan öffnen" → persönlicher Link `/access/<token>` (pro Kauf einzigartig, nur für die
-   Käufer-E-Mail, nur eingeloggt). Geteilte Links ohne passenden Login funktionieren nicht.
+   Die Success-Seite zeigt sofort einen **signierten Zugangslink pro Produkt** — dieser Link
+   trägt E-Mail + Produkt-ID direkt im (HMAC-signierten) Token und funktioniert **ohne** Store-/
+   Datenbank-Lookup, also auch wenn der Server/die Disk direkt danach neu startet.
+3. Käufer kann sich optional mit Google anmelden (`account.html`), um Käufe später gebündelt im
+   Konto zu sehen — für den Zugang selbst ist das nicht nötig.
+4. Der Zugangslink `/access/<token>` funktioniert direkt, ohne Login, für die Käufer-E-Mail.
+   Geteilte Links an Dritte öffnen zwar den Plan (kein Login-Zwang), zeigen aber sichtbar
+   „Zugriff für <Käufer-E-Mail>".
 
 ## Sicherheit (Kurz)
 
 - Keine Secrets im Frontend/Logs. Login = signiertes HttpOnly-Cookie. Freischaltung nur serverseitig
   nach Stripe-Verifikation. Volle Pläne privat (`server/private/`), öffentliche `/products/plans/*.html|*.md`
-  gesperrt. Access-Tokens werden abgeleitet (nicht im Klartext gespeichert).
+  gesperrt.
+- **Access-Tokens, zwei Varianten, beide gültig:** v1 (abgeleitet aus der Entitlement-ID, braucht
+  einen Store-Lookup) und v2 (`v2.…`, stateless — E-Mail/Produkt-ID/Session-ID stecken signiert im
+  Token selbst). Checkout-Success vergibt jetzt v2-Links, damit der Käuferzugang auch bei einem
+  JSON-Store-Reset/Render-Neustart direkt danach funktioniert. Alte v1-Links bleiben gültig.
+  Der Store bleibt wichtig für Konto-Übersicht, Idempotenz und den Webhook.
+- **`SESSION_SECRET` muss stabil bleiben:** Rotiert das Secret, werden alle signierten Tokens
+  (Sessions, v1- **und** v2-Zugangslinks) ungültig.
 - `DEV_AUTH=1` (nur lokal!) erlaubt Test-Login/-Freischaltung ohne Zahlung. Default = aus.
 
 ## Preise

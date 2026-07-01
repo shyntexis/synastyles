@@ -68,10 +68,22 @@ Fehlt Google: Der Login-Button zeigt einen sauberen Setup-Hinweis statt zu crash
 - **Login** über Google → signiertes, HttpOnly-Session-Cookie (HMAC mit `SESSION_SECRET`).
 - **Freischaltung (Entitlement)** entsteht nur serverseitig nach Stripe-Verifikation (Webhook oder
   `/api/checkout/complete`). Kein Client kann sich selbst freischalten.
-- **Zugangslinks** `/access/<token>`: pro Kauf/Produkt ein eigener Token (aus der Entitlement-ID
-  + Secret abgeleitet, nicht im Klartext gespeichert). Der Link funktioniert nach bestätigter Zahlung
-  direkt ohne Google-Login, damit Käufer ihre digitalen Inhalte sofort öffnen können. Google-Login ist
-  nur optionaler Konto-Komfort; rohe Plan-Dateien bleiben trotzdem gesperrt.
+- **Zugangslinks** `/access/<token>`: pro Kauf/Produkt ein eigener Token, in zwei Varianten, beide
+  gültig: **v1** (abgeleitet aus der Entitlement-ID, braucht einen Store-Lookup) und **v2**
+  (`v2.…`-Präfix, zustandsarm — E-Mail, Produkt-ID und Session-ID stecken HMAC-signiert direkt im
+  Token, ohne dass ein DB-Eintrag existieren muss). `/api/checkout/complete` vergibt seit dieser
+  Version v2-Links, damit der Käuferzugang auch direkt funktioniert, wenn der JSON-Store/die Disk
+  gerade erst neu gestartet ist oder (noch) nicht persistiert hat. Der Link funktioniert nach
+  bestätigter Zahlung direkt ohne Google-Login, damit Käufer ihre digitalen Inhalte sofort öffnen
+  können. Google-Login ist nur optionaler Konto-Komfort; rohe Plan-Dateien bleiben trotzdem gesperrt.
+  Der Account-Store (`server/private/db.json` bzw. `ZENITH_DATA_DIR`) und der Stripe-**Webhook**
+  bleiben trotzdem wichtig: sie treiben die Konto-Übersicht („meine Käufe"), sorgen für idempotente
+  Freischaltung und liefern eine zweite, zuverlässige Bestätigungsquelle unabhängig davon, ob der
+  Käufer die Success-Seite überhaupt öffnet.
+- **`SESSION_SECRET` muss stabil bleiben.** Es signiert Sessions **und** beide Access-Token-Varianten
+  (v1 und v2). Rotiert das Secret (z. B. neuer Zufallswert in Render gesetzt), werden alle bereits
+  ausgegebenen Zugangslinks und Login-Sessions ungültig — Käufer bräuchten dann einen neuen Link
+  über `/api/checkout/complete` (per Kauf-Beleg/E-Mail) oder erneuten Kauf-Support.
 - **Volle Pläne** liegen in `server/private/plans/` und werden **nicht** öffentlich ausgeliefert;
   direkte Aufrufe von `/products/plans/*.html|*.md` sind gesperrt.
 
