@@ -1,0 +1,42 @@
+{
+  "principle": "Pro Video genau 1 Problem, 1 Erklärung, 1 Mini-Action. Ein echter wirkender Mensch redet, aber Stimme, Avatar, B-Roll, Schnitt und Untertitel sind KI-gestützt produziert und editiert. Tiefe entsteht über die Anzahl fokussierter Clips, nicht über überladene Einzelvideos.",
+  "formats": [
+    { "name": "Short", "durationSec": "30-60", "use": "TikTok/Reels/Shorts", "aspect": "9:16", "goal": "Reichweite & Funnel-Einstieg, Hook in den ersten 2 Sekunden" },
+    { "name": "Modul", "durationSec": "120-300", "use": "Käufer-Lektion", "aspect": "16:9 oder 9:16", "goal": "Bezahlter Mehrwert innerhalb eines gekauften Produkts" }
+  ],
+  "toolStack": [
+    { "role": "script", "tools": ["Claude", "GPT"], "note": "Hook, Kernaussage und Mini-Action strukturieren; inklusive Claim-Review" },
+    { "role": "voice_de", "tools": ["ElevenLabs"], "alternatives": ["Murf", "Play.ht", "Azure TTS"], "note": "Natürliche deutsche Aussprache und Betonung; konsistente Markenstimme festlegen" },
+    { "role": "talking_avatar", "tools": ["HeyGen", "Tavus", "Synthesia", "D-ID"], "note": "Für realistische Talking-Coach-Avatare mit Lip-Sync. Higgsfield ist eher Cinematic/B-Roll, nicht primär realistischer Talking-Avatar." },
+    { "role": "broll", "tools": ["Higgsfield", "Runway", "Kling", "Pika"], "note": "Atmosphärische Gym-Shots, cineastische Inserts und Übergänge (nicht-sprechende Bildanteile)" },
+    { "role": "edit_captions", "tools": ["CapCut", "Remotion", "FFmpeg", "Whisper", "AssemblyAI"], "note": "Whisper/AssemblyAI für Transkription, dann Untertitel einbrennen; Untertitel bei Shorts Pflicht" },
+    { "role": "music_sfx", "tools": ["lizenzfreie Bibliotheken"], "examples": ["Epidemic Sound", "Artlist", "Uppbeat", "YouTube Audio Library"], "note": "Lizenz pro genutztem Track dokumentieren" }
+  ],
+  "pipeline": ["Script", "Safety/Claim-Review", "Avatar/Voice", "B-Roll", "Captions", "Musik/SFX", "Export", "QA-Check"],
+  "qaChecklist": [
+    "Ergibt das Video Sinn (Hook -> Erklärung -> Action)?",
+    "Sind Aussagen faktisch korrekt?",
+    "Keine Heilversprechen / keine garantierten Resultate?",
+    "Werden Übungen korrekt und sicher gezeigt/beschrieben?",
+    "Stimmen Lip-Sync, Untertitel und Audio-Pegel?"
+  ],
+  "productVideoPacks": [
+    { "productId": "starter-plan", "title": "Starter Gym Plan", "price": "€9", "modules": ["Technik-Basics", "Planüberblick", "Erste Woche"] },
+    { "productId": "gym-food", "title": "Gym + Ernährung", "price": "€19", "modules": ["Einkauf", "Protein & Portionen", "Beispieltag"] },
+    { "productId": "komplett", "title": "Komplett-Paket", "price": "€39", "modules": ["Wochenstruktur", "Cardio sinnvoll", "Schlaf & Recovery", "Supplement-Basics"] },
+    { "productId": "meal-plan", "title": "Essensplan", "price": "€3–€5", "modules": ["3 Tagesstrukturen"] },
+    { "productId": "supplement-plan", "title": "Supplement-Guide", "price": "€3–€5", "modules": ["Sinnvoll vs. unnötig"] },
+    { "productId": "cardio-plan", "title": "Cardio Plan", "price": "€3–€5", "modules": ["LISS vs. Intervalle"] },
+    { "productId": "sleep-plan", "title": "Schlaf & Erholung", "price": "€3–€5", "modules": ["Abendroutine"] },
+    { "productId": "form-checklist", "title": "Technik-Checkliste", "price": "€3–€5", "modules": ["Grundübungen-Cues"] }
+  ],
+  "legalEthics": [
+    "Keine medizinische Beratung – allgemeine Trainings-/Lifestyle-Inhalte, kein Ersatz für ärztliche oder physiotherapeutische Beratung.",
+    "Keine garantierten Ergebnisse – Resultate sind individuell.",
+    "KI-Avatar transparent kennzeichnen, wo nötig oder gefordert (im Zweifel kennzeichnen).",
+    "Nur lizenzfreie oder ordnungsgemäß lizenzierte Musik/SFX/Stockmaterial; Lizenznachweise dokumentieren.",
+    "Übungen korrekt und sicher darstellen; auf typische Fehler/Risiken hinweisen."
+  ],
+  "status": "not_generated",
+  "disclaimer": "Allgemeine Trainings-/Lifestyle-Inhalte, keine medizinische Beratung, keine garantierten Ergebnisse."
+}

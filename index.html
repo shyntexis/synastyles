@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#080807" />
+  <title>ZENITH — Gym Coaching mit Tristan</title>
+  <meta name="description" content="Klare Trainingspläne, einfache Ernährung und eine Wochenstruktur, die in deinen Alltag passt. Gym-Coaching von Tristan unter der Marke ZENITH." />
+  <meta property="og:title" content="ZENITH — Gym Coaching mit Tristan" />
+  <meta property="og:description" content="Dein Gym-Plan, den du wirklich durchziehst. Klare Übungen, einfache Ernährung, fairer Preis." />
+  <meta property="og:image" content="assets/zenith-profile.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Zum Inhalt springen</a>
+
+  <header class="site-header" data-reveal>
+    <nav class="nav-shell" aria-label="Hauptnavigation">
+      <a class="brand" href="#top" aria-label="ZENITH Startseite">
+        <span class="brand-mark" aria-hidden="true"><span class="z-sigil"></span></span>
+        <span class="brand-copy"><strong>ZENITH</strong><em>Gym Coaching</em></span>
+      </a>
+      <div class="nav-right">
+        <div class="nav-links" id="navLinks">
+          <a href="#pakete">Pakete</a>
+          <a href="#add-ons">Mini-Pläne</a>
+          <a href="#ablauf">Ablauf</a>
+          <a href="#kontakt">Kontakt</a>
+          <a href="account.html">Konto</a>
+          <a class="nav-cta" href="#pakete">Plan ansehen</a>
+        </div>
+        <button class="cart-button" id="cartButton" type="button" aria-label="Warenkorb öffnen" aria-haspopup="dialog">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 4h2l2.4 12.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6L22 8H6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="20.6" r="1.3" fill="currentColor"/><circle cx="18" cy="20.6" r="1.3" fill="currentColor"/></svg>
+          <span class="cart-label">Warenkorb</span>
+          <span class="cart-count" id="cartCount" data-empty="true">0</span>
+        </button>
+        <button class="nav-toggle" type="button" aria-label="Navigation öffnen" aria-expanded="false"><span></span><span></span></button>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section id="top" class="hero">
+      <div class="hero-copy" data-reveal>
+        <span class="eyebrow">ZENITH · Gym Coaching</span>
+        <h1>Dein Gym-Plan, den du wirklich durchziehst.</h1>
+        <p class="lead">Klare Übungen, einfache Ernährung und ein Plan, der in deinen Alltag passt. Kein Rätselraten mehr, was du heute im Gym machen sollst.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="#pakete">Plan ansehen</a>
+          <a class="button ghost" href="https://www.tiktok.com/@tristymindagym" target="_blank" rel="noopener">TikTok ansehen</a>
+        </div>
+        <p class="hero-note">Pläne ab €9 · faire Launch-Preise</p>
+        <div class="micro-proof" aria-label="Inhalte">
+          <span>Trainingsplan</span><span>Ernährung</span><span>Wochenstruktur</span><span>Cardio</span>
+        </div>
+      </div>
+      <figure class="hero-art" data-reveal>
+        <div class="portal-card">
+          <img src="assets/zenith-profile.png" alt="ZENITH — eine Langhantel unter dem goldenen ZENITH-Schriftzug, dunkel und cinematisch" />
+          <span class="portal-overlay" aria-hidden="true"></span>
+          <div class="hero-chip plan" aria-hidden="true"><b>Heute · Oberkörper</b><span>4 Übungen · ca. 45 Min</span></div>
+          <div class="hero-chip price" aria-hidden="true">ab €9</div>
+          <figcaption class="portal-plate">
+            <span class="brand-mark" aria-hidden="true"><span class="z-sigil"></span></span>
+            <span class="portal-plate-copy"><strong>ZENITH</strong><em>Gym Coaching</em></span>
+          </figcaption>
+        </div>
+      </figure>
+    </section>
+
+    <section class="value-strip" data-reveal>
+      <div>
+        <span>Klarer Plan</span>
+        <strong>Übungen, Sätze und Wiederholungen — du weißt jeden Tag, was ansteht.</strong>
+      </div>
+      <div>
+        <span>Einfache Ernährung</span>
+        <strong>Eine Essensstruktur und Einkaufslogik, die im Alltag funktioniert.</strong>
+      </div>
+      <div>
+        <span>Wochenstruktur</span>
+        <strong>Training, Cardio und Erholung sinnvoll über die Woche verteilt.</strong>
+      </div>
+    </section>
+
+    <section id="pakete" class="packages-section">
+      <div class="section-head" data-reveal>
+        <span class="eyebrow">Coaching-Pakete</span>
+        <h2>Wähle deinen Plan.</h2>
+        <p>Faire Launch-Preise zum Start. Du zahlst wenig, bekommst aber einen klaren, umsetzbaren Plan. Die Buttons legen deine Auswahl direkt in den Warenkorb; der Checkout leitet zur sicheren Stripe-Zahlung weiter.</p>
+      </div>
+
+      <div class="package-grid">
+        <article class="package-card" data-reveal>
+          <div class="package-number">01</div>
+          <div class="package-label">Für den Einstieg</div>
+          <h3>Starter Gym Plan</h3>
+          <p>Ein kurzer Trainingsplan, mit dem du direkt loslegen kannst — ohne dich zu verzetteln.</p>
+          <div class="price"><span>Launch</span><strong>€9</strong></div>
+          <ul>
+            <li>Trainingsplan für den Einstieg</li>
+            <li>Übungen, Sätze, Wiederholungen</li>
+            <li>Wann du steigern solltest</li>
+            <li>Typische Anfänger-Fehler vermeiden</li>
+          </ul>
+          <button class="button full primary add-to-cart" type="button" data-product="starter-plan">In den Warenkorb</button>
+        </article>
+
+        <article class="package-card featured" data-reveal>
+          <div class="ribbon">Beliebt</div>
+          <div class="package-number">02</div>
+          <div class="package-label">Training + Essen</div>
+          <h3>Gym + Ernährung</h3>
+          <p>Der Trainingsplan plus eine einfache Essensstruktur, damit du nicht nach einer Woche wieder rausfällst.</p>
+          <div class="price"><span>Launch</span><strong>€19</strong></div>
+          <ul>
+            <li>Alles aus dem Starter Gym Plan</li>
+            <li>Einfache Essensstruktur für den Alltag</li>
+            <li>Einkaufslogik: was wirklich in den Korb</li>
+            <li>Protein und Portionen ohne Kalorien-Stress</li>
+          </ul>
+          <button class="button full primary add-to-cart" type="button" data-product="gym-food">In den Warenkorb</button>
+        </article>
+
+        <article class="package-card" data-reveal>
+          <div class="package-number">03</div>
+          <div class="package-label">Alles zusammen</div>
+          <h3>Komplett-Paket</h3>
+          <p>Training, Ernährung, Cardio, Schlaf und eine Wochenstruktur — alles an einem Ort, damit du nichts mehr selbst zusammensuchen musst.</p>
+          <div class="price"><span>Launch</span><strong>€39</strong></div>
+          <ul>
+            <li>Alles aus den Plänen 1 und 2</li>
+            <li>Cardio sinnvoll einbauen</li>
+            <li>Schlaf und Erholung</li>
+            <li>Supplement-Basics: was sinnvoll ist</li>
+            <li>Feste Wochenstruktur</li>
+          </ul>
+          <button class="button full primary add-to-cart" type="button" data-product="komplett">In den Warenkorb</button>
+        </article>
+      </div>
+    </section>
+
+    <section id="add-ons" class="addons-section">
+      <div class="section-head narrow" data-reveal>
+        <span class="eyebrow">Einzelne Mini-Pläne</span>
+        <h2>Kleine Pläne. Fairer Preis. Sofort nutzbar.</h2>
+        <p>Günstige Einzelteile für alle, die erst einmal mit einer Sache anfangen wollen.</p>
+      </div>
+      <div class="addon-grid">
+        <button class="addon-card add-to-cart" type="button" data-product="meal-plan" data-reveal><b>€5</b><span>Essensplan</span><small>3 einfache Tagesstrukturen</small><em class="addon-add">In den Warenkorb</em></button>
+        <button class="addon-card add-to-cart" type="button" data-product="supplement-plan" data-reveal><b>€4</b><span>Supplement-Guide</span><small>Was Sinn macht — und was nicht</small><em class="addon-add">In den Warenkorb</em></button>
+        <button class="addon-card add-to-cart" type="button" data-product="cardio-plan" data-reveal><b>€4</b><span>Cardio Plan</span><small>Cardio ohne planloses Rennen</small><em class="addon-add">In den Warenkorb</em></button>
+        <button class="addon-card add-to-cart" type="button" data-product="sleep-plan" data-reveal><b>€4</b><span>Schlaf &amp; Erholung</span><small>Besser regenerieren</small><em class="addon-add">In den Warenkorb</em></button>
+        <button class="addon-card add-to-cart" type="button" data-product="form-checklist" data-reveal><b>€3</b><span>Technik-Checkliste</span><small>Saubere Ausführung im Gym</small><em class="addon-add">In den Warenkorb</em></button>
+      </div>
+    </section>
+
+    <section id="ablauf" class="steps-section">
+      <div class="section-head narrow" data-reveal>
+        <span class="eyebrow">So läuft's ab</span>
+        <h2>Kein Hype. Nur ein Plan, den du umsetzt.</h2>
+        <p>Du musst nichts recherchieren und nichts zusammenbasteln. Du holst dir den Plan und arbeitest ihn ab.</p>
+      </div>
+      <div class="step-grid" data-reveal>
+        <div class="step-card">
+          <b>1</b>
+          <h3>Plan holen</h3>
+          <span>Wähle das Paket, das zu deinem Ziel passt — vom Starter bis zum Komplett-Paket.</span>
+        </div>
+        <div class="step-card">
+          <b>2</b>
+          <h3>Loslegen</h3>
+          <span>Klare Übungen, Sätze und Wiederholungen. Du weißt jeden Tag, was im Gym ansteht.</span>
+        </div>
+        <div class="step-card">
+          <b>3</b>
+          <h3>Dranbleiben</h3>
+          <span>Einfache Ernährung und eine Wochenstruktur, die in deinen Alltag passt.</span>
+        </div>
+        <div class="step-card">
+          <b>4</b>
+          <h3>Fragen?</h3>
+          <span>Schreib mir per E-Mail oder auf TikTok. Ich helfe dir weiter.</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="kontakt" class="contact-section" data-reveal>
+      <div class="contact-intro">
+        <span class="eyebrow">Kontakt</span>
+        <h2>Schreib mir.</h2>
+        <p>Du hast eine Frage zum Plan oder weißt nicht, welches Paket zu dir passt? Melde dich einfach — am schnellsten per E-Mail.</p>
+        <div class="social-actions">
+          <a class="button ghost" id="mailLink" href="mailto:synastyles@gmail.com">synastyles@gmail.com</a>
+          <a class="button ghost" id="tiktokLink" href="https://www.tiktok.com/@tristymindagym" target="_blank" rel="noopener">TikTok ansehen</a>
+        </div>
+      </div>
+      <form class="email-card" id="emailForm">
+        <label for="emailInput">Frage stellen</label>
+        <div class="email-row">
+          <input id="emailInput" type="email" placeholder="deine@email.de" required />
+          <button class="button primary" type="submit">Nachricht vorbereiten</button>
+        </div>
+        <small id="emailStatus">Öffnet deine E-Mail-App mit einer vorbereiteten Nachricht an mich.</small>
+      </form>
+    </section>
+
+    <section class="final-cta" data-reveal>
+      <span class="eyebrow">Leg los</span>
+      <h2>Hör auf zu sammeln. Hol dir einen Plan und zieh ihn durch.</h2>
+      <div class="hero-actions centered">
+        <button class="button primary add-to-cart" type="button" data-product="gym-food">Beliebten Plan in den Warenkorb</button>
+        <a class="button ghost" href="https://www.tiktok.com/@tristymindagym" target="_blank" rel="noopener">Erst TikTok ansehen</a>
+      </div>
+      <p class="medical-note">Hinweis: Die Inhalte sind allgemeine Fitness- und Trainingsinformationen und ersetzen keine medizinische Beratung. Bei Erkrankungen, Verletzungen oder Unsicherheit bitte ärztlich abklären.</p>
+    </section>
+  </main>
+
+  <!-- Warenkorb-Drawer -->
+  <div class="cart-drawer" id="cartDrawer" hidden>
+    <button class="cart-backdrop" type="button" data-close-cart aria-label="Warenkorb schließen"></button>
+    <aside class="cart-panel" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
+      <div class="cart-head">
+        <div>
+          <span class="eyebrow">Warenkorb</span>
+          <h2 id="cartTitle">Deine Auswahl</h2>
+        </div>
+        <button class="modal-close" type="button" data-close-cart aria-label="Schließen">×</button>
+      </div>
+      <div class="cart-items" id="cartItems"></div>
+      <div class="cart-foot">
+        <div class="cart-total"><span>Gesamt</span><strong id="cartTotal">€0</strong></div>
+        <button class="button primary full" type="button" id="cartCheckout">Zum Checkout</button>
+        <button class="cart-clear" type="button" id="cartClear">Warenkorb leeren</button>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Checkout-Flow -->
+  <div class="checkout-modal" id="checkoutModal" hidden>
+    <div class="modal-backdrop" data-close-checkout></div>
+    <div class="modal-card checkout-card" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
+      <button class="modal-close" type="button" data-close-checkout aria-label="Schließen">×</button>
+      <span class="eyebrow">Checkout</span>
+      <h2 id="checkoutTitle">Bestellung abschließen</h2>
+      <div class="checkout-summary" id="checkoutSummary"></div>
+      <div class="checkout-total"><span>Gesamt</span><strong id="checkoutTotal">€0</strong></div>
+      <form class="checkout-form" id="checkoutForm" novalidate>
+        <label for="checkoutEmail">E-Mail für die Lieferung</label>
+        <input id="checkoutEmail" type="email" required placeholder="deine@email.de" autocomplete="email" />
+        <label class="check"><input type="checkbox" id="legalContent" required /><span>Ich verstehe, dass es sich um digitale Inhalte mit allgemeinen Fitness- und Trainingsinformationen handelt — keine medizinische Beratung und keine garantierten Ergebnisse.</span></label>
+        <label class="check"><input type="checkbox" id="legalTerms" required /><span id="legalTermsText">Mir ist klar, dass der Shop noch in Vorbereitung ist und ein echter Kauf erst nach der Live-Schaltung möglich ist.</span></label>
+        <button class="button primary full" type="submit" id="checkoutSubmit">Weiter</button>
+        <p class="checkout-status" id="checkoutStatus"></p>
+      </form>
+    </div>
+  </div>
+
+  <div class="sr-status" id="cartLive" aria-live="polite" role="status"></div>
+
+  <footer class="site-footer">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <span class="brand-mark" aria-hidden="true"><span class="z-sigil"></span></span>
+        <div><strong>ZENITH</strong><p>Gym Coaching</p></div>
+      </div>
+      <div class="footer-links"><a href="#pakete">Pakete</a><a href="#add-ons">Mini-Pläne</a><a href="#ablauf">Ablauf</a><a href="#kontakt">Kontakt</a><a href="https://www.tiktok.com/@tristymindagym" target="_blank" rel="noopener">TikTok</a></div>
+    </div>
+    <div class="footer-legal">
+      <strong>Impressum &amp; Kontakt</strong>
+      <p>Verantwortlich: Tristan · Kontakt: <a href="mailto:synastyles@gmail.com">synastyles@gmail.com</a></p>
+      <p class="legal-note">Hinweis: Diese Seite ist noch in Vorbereitung. Stripe-Checkout und geschützter Käuferzugriff sind technisch vorbereitet; vor öffentlicher Live-Schaltung müssen vollständiges Impressum, Datenschutz, AGB/Widerruf und Google-Login-Konfiguration ergänzt werden. Dies ist noch kein vollständiges Impressum im rechtlichen Sinne.</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

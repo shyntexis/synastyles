@@ -1,0 +1,14 @@
+{
+  "name": "zenith-gym-coaching-site",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "ZENITH Gym Coaching — statische Landingpage + Warenkorb + Stripe-Checkout-Server (Node, ohne externe Dependencies).",
+  "scripts": {
+    "start": "node server/checkout-server.mjs",
+    "dev": "node server/checkout-server.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

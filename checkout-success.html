@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0a0a09" />
+  <title>Zahlung bestätigt — ZENITH</title>
+  <meta name="robots" content="noindex" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root{--ink:#f7f2e7;--muted:#bcb5a6;--soft:#8a8273;--gold:#e7be6c;--gold2:#ffe2a0;--amber:#f0a23a;--line:rgba(231,190,108,.2);--card-line:rgba(255,255,255,.1)}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;font-family:Inter,system-ui,sans-serif;color:var(--ink);line-height:1.6;display:grid;place-items:center;padding:28px 18px;
+      background-color:#0a0a09;background-image:radial-gradient(720px 440px at 12% -4%,rgba(231,190,108,.14),transparent 62%),radial-gradient(680px 520px at 92% 6%,rgba(231,190,108,.07),transparent 60%),linear-gradient(180deg,#0c0b0a,#0a0a09 55%,#080807);background-repeat:no-repeat;background-size:100% 100%;-webkit-font-smoothing:antialiased}
+    .card{width:min(620px,100%);padding:clamp(26px,5vw,42px);border:1px solid var(--line);border-radius:24px;background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));box-shadow:0 36px 100px rgba(0,0,0,.55)}
+    .brand{display:inline-flex;align-items:center;gap:11px;margin-bottom:22px;color:var(--ink);text-decoration:none}
+    .z{width:40px;height:40px;display:grid;place-items:center;border-radius:12px;background:linear-gradient(140deg,#ffe9bd,#e7be6c 45%,#c9912f);color:#120c04;font-weight:900;font-size:20px}
+    .brand strong{letter-spacing:.22em;font-size:16px;display:block;line-height:1.1}
+    .brand em{font-style:normal;color:var(--gold2);font-size:11px;letter-spacing:.08em}
+    .check-ico{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:rgba(231,190,108,.14);border:1px solid var(--line);color:var(--gold2);font-size:30px;margin-bottom:18px}
+    h1{margin:0;font-size:clamp(26px,4vw,38px);letter-spacing:-.03em;line-height:1.05}
+    .lead{margin:14px 0 0;color:var(--muted);font-size:17px}
+    .rows{margin:24px 0 0;display:grid;gap:10px}
+    .row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 16px;border:1px solid var(--card-line);border-radius:14px;background:rgba(255,255,255,.04)}
+    .row strong{font-size:15px}
+    .row a{padding:9px 15px;border-radius:999px;border:1px solid var(--line);background:rgba(231,190,108,.12);color:var(--gold2);font-size:13px;font-weight:800;text-decoration:none}
+    .note{margin:22px 0 0;padding:14px 16px;border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:12px;background:rgba(231,190,108,.07);color:#e7e0cf;font-size:13.5px;line-height:1.55}
+    .actions{margin:24px 0 0;display:flex;gap:12px;flex-wrap:wrap}
+    .button{min-height:48px;display:inline-flex;align-items:center;justify-content:center;padding:0 22px;border-radius:999px;font-weight:800;font-size:15px;text-decoration:none;cursor:pointer}
+    .primary{color:#170f04;background:linear-gradient(135deg,#ffe9bd,#e7be6c 50%,#f0a23a)}
+    .ghost{border:1px solid var(--card-line);background:rgba(255,255,255,.05);color:#f5eedf}
+    .muted{color:var(--soft)}
+    a:focus-visible,.button:focus-visible{outline:3px solid rgba(231,190,108,.9);outline-offset:3px}
+    .hidden{display:none}
+  </style>
+</head>
+<body>
+  <main class="card">
+    <a class="brand" href="index.html"><span class="z" aria-hidden="true">Z</span><span><strong>ZENITH</strong><em>Gym Coaching</em></span></a>
+    <div class="check-ico" id="ico" aria-hidden="true">✓</div>
+    <h1 id="title">Zahlung wird geprüft …</h1>
+    <p class="lead" id="lead">Einen Moment, wir bestätigen deine Bestellung.</p>
+    <div class="rows hidden" id="rows"></div>
+    <div class="note hidden" id="note"></div>
+    <div class="actions">
+      <a class="button primary" href="account.html">Zu meinem Konto</a>
+      <a class="button ghost" href="index.html">Startseite</a>
+    </div>
+  </main>
+  <script>
+    (function () {
+      try { localStorage.removeItem('zenith_cart_v1'); } catch (e) {}
+      const sid = new URLSearchParams(location.search).get('session_id');
+      const title = document.getElementById('title');
+      const lead = document.getElementById('lead');
+      const rows = document.getElementById('rows');
+      const note = document.getElementById('note');
+      const ico = document.getElementById('ico');
+
+      function fail(msg) { ico.textContent = '…'; title.textContent = 'Bestellung'; lead.textContent = msg; }
+
+      if (!sid) { fail('Vielen Dank! Sobald deine Zahlung bestätigt ist, findest du deine Pläne in deinem Konto.'); return; }
+
+      fetch('/api/checkout/complete?session_id=' + encodeURIComponent(sid))
+        .then(r => r.json())
+        .then(d => {
+          if (!d.ok) { fail(d.message || 'Wir konnten die Zahlung noch nicht bestätigen. Schau in einem Moment in deinem Konto nach.'); return; }
+          title.textContent = 'Danke! Zahlung bestätigt.';
+          if (d.matches && d.products && d.products.some(p => p.accessPath)) {
+            lead.textContent = 'Deine Pläne sind freigeschaltet:';
+            rows.classList.remove('hidden');
+            rows.innerHTML = d.products.map(p => `<div class="row"><strong>${esc(p.title)}</strong>${p.accessPath ? `<a href="${p.accessPath}">Plan öffnen</a>` : ''}</div>`).join('');
+          } else {
+            lead.innerHTML = 'Deine Bestellung für <strong>' + esc(d.email || 'deine E-Mail') + '</strong> ist da. Melde dich mit <strong>derselben Google-E-Mail</strong> an, um deine Pläne zu öffnen.';
+            note.classList.remove('hidden');
+            note.innerHTML = 'Dein Zugang ist an deine E-Mail gebunden. <a href="account.html" style="color:#ffe2a0">Jetzt im Konto anmelden →</a>';
+          }
+        })
+        .catch(() => fail('Verbindung zum Server fehlgeschlagen. Deine Pläne findest du nach dem Login in deinem Konto.'));
+
+      function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+    })();
+  </script>
+</body>
+</html>

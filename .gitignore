@@ -1,0 +1,23 @@
+# Secrets — niemals committen
+.env
+
+# Private Käuferdaten / Store (nie ins Repo, nie öffentlich)
+server/private/db.json
+server/private/*.json
+server/private/*.tmp-*
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Test-Artefakte
+*.png.tmp
+test-artifacts/
+test-results/
+
+# Original-/Zwischenbilder (nicht für Deployment nötig)
+assets/_original/
+
+# OS / Editor
+.DS_Store
+Thumbs.db

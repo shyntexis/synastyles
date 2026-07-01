@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0a0a09" />
+  <title>Bezahlung abgebrochen — ZENITH</title>
+  <meta name="robots" content="noindex" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root{--ink:#f7f2e7;--muted:#bcb5a6;--gold:#e7be6c;--gold2:#ffe2a0;--amber:#f0a23a;--line:rgba(231,190,108,.2);--card-line:rgba(255,255,255,.1)}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;font-family:Inter,system-ui,sans-serif;color:var(--ink);line-height:1.6;display:grid;place-items:center;padding:28px 18px;
+      background-color:#0a0a09;background-image:radial-gradient(720px 440px at 12% -4%,rgba(231,190,108,.14),transparent 62%),linear-gradient(180deg,#0c0b0a,#0a0a09 55%,#080807);background-repeat:no-repeat;background-size:100% 100%;-webkit-font-smoothing:antialiased}
+    .card{width:min(560px,100%);padding:clamp(26px,5vw,42px);border:1px solid var(--line);border-radius:24px;background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));box-shadow:0 36px 100px rgba(0,0,0,.55)}
+    .brand{display:inline-flex;align-items:center;gap:11px;margin-bottom:22px;color:var(--ink);text-decoration:none}
+    .z{width:40px;height:40px;display:grid;place-items:center;border-radius:12px;background:linear-gradient(140deg,#ffe9bd,#e7be6c 45%,#c9912f);color:#120c04;font-weight:900;font-size:20px}
+    .brand strong{letter-spacing:.22em;font-size:16px;display:block;line-height:1.1}
+    .brand em{font-style:normal;color:var(--gold2);font-size:11px;letter-spacing:.08em}
+    h1{margin:0;font-size:clamp(26px,4vw,36px);letter-spacing:-.03em;line-height:1.05}
+    p{margin:14px 0 0;color:var(--muted);font-size:17px}
+    .actions{margin:26px 0 0;display:flex;gap:12px;flex-wrap:wrap}
+    .button{min-height:48px;display:inline-flex;align-items:center;justify-content:center;padding:0 22px;border-radius:999px;font-weight:800;font-size:15px;text-decoration:none;cursor:pointer}
+    .primary{color:#170f04;background:linear-gradient(135deg,#ffe9bd,#e7be6c 50%,#f0a23a)}
+    .ghost{border:1px solid var(--card-line);background:rgba(255,255,255,.05);color:#f5eedf}
+    a:focus-visible{outline:3px solid rgba(231,190,108,.9);outline-offset:3px}
+  </style>
+</head>
+<body>
+  <main class="card">
+    <a class="brand" href="index.html"><span class="z" aria-hidden="true">Z</span><span><strong>ZENITH</strong><em>Gym Coaching</em></span></a>
+    <h1>Bezahlung abgebrochen.</h1>
+    <p>Kein Problem — es wurde nichts berechnet. Dein Warenkorb bleibt gespeichert, du kannst jederzeit weitermachen.</p>
+    <div class="actions">
+      <a class="button primary" href="index.html#pakete">Zurück zu den Plänen</a>
+      <a class="button ghost" href="mailto:synastyles@gmail.com">Frage stellen</a>
+    </div>
+  </main>
+</body>
+</html>
