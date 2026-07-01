@@ -7,8 +7,11 @@ import { fileURLToPath } from 'node:url';
 import { randomBytes } from 'node:crypto';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const DB_DIR = join(__dirname, 'private');
-const DB_PATH = join(DB_DIR, 'db.json');
+// Default local store lives in server/private (ignored by Git). In production,
+// set ZENITH_DATA_DIR to a persistent disk mount (e.g. /var/data on Render) so
+// buyer accounts and entitlements survive deploys/restarts.
+const DB_DIR = process.env.ZENITH_DATA_DIR || join(__dirname, 'private');
+const DB_PATH = process.env.ZENITH_DB_PATH || join(DB_DIR, 'db.json');
 
 const nowIso = () => new Date().toISOString();
 const canon = (e) => String(e || '').trim().toLowerCase();

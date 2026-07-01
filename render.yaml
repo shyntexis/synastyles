@@ -1,0 +1,52 @@
+services:
+  - type: web
+    name: zenith-gym-coaching-site
+    runtime: node
+    # Production needs persistent storage for buyer accounts/entitlements.
+    # This usually requires a paid Render web service + disk. Do not enable paid deploy without owner approval.
+    plan: starter
+    region: frankfurt
+    branch: main
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/checkout-status
+    autoDeploy: true
+    disk:
+      name: zenith-buyer-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_VERSION
+        value: 20.18.1
+      - key: ZENITH_DATA_DIR
+        value: /var/data
+      - key: DEV_AUTH
+        value: "0"
+      - key: PUBLIC_SITE_URL
+        sync: false
+      - key: SESSION_SECRET
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: STRIPE_PRICE_STARTER_GYM_PLAN
+        sync: false
+      - key: STRIPE_PRICE_GYM_ERNAEHRUNG
+        sync: false
+      - key: STRIPE_PRICE_KOMPLETT_PAKET
+        sync: false
+      - key: STRIPE_PRICE_MINI_ESSENSPLAN
+        sync: false
+      - key: STRIPE_PRICE_MINI_SUPPLEMENT_GUIDE
+        sync: false
+      - key: STRIPE_PRICE_MINI_CARDIO_PLAN
+        sync: false
+      - key: STRIPE_PRICE_MINI_SCHLAF_ERHOLUNG
+        sync: false
+      - key: STRIPE_PRICE_MINI_TECHNIK_CHECKLISTE
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
