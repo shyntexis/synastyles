@@ -22,7 +22,11 @@
       ],
       "stripePriceEnvKey": "STRIPE_PRICE_STARTER_GYM_PLAN",
       "stripePriceIdPlaceholder": "price_REPLACE_starter_gym_plan",
-      "tags": ["training", "einstieg"]
+      "tags": [
+        "training",
+        "einstieg"
+      ],
+      "stripePriceId": "price_1To7bl48MRa2tbyIKWKtGFGc"
     },
     {
       "id": "gym-food",
@@ -44,7 +48,11 @@
       ],
       "stripePriceEnvKey": "STRIPE_PRICE_GYM_ERNAEHRUNG",
       "stripePriceIdPlaceholder": "price_REPLACE_gym_ernaehrung",
-      "tags": ["training", "ernährung"]
+      "tags": [
+        "training",
+        "ernährung"
+      ],
+      "stripePriceId": "price_1To7bm48MRa2tbyIXpy1qSvB"
     },
     {
       "id": "komplett",
@@ -67,7 +75,13 @@
       ],
       "stripePriceEnvKey": "STRIPE_PRICE_KOMPLETT_PAKET",
       "stripePriceIdPlaceholder": "price_REPLACE_komplett_paket",
-      "tags": ["training", "ernährung", "cardio", "erholung"]
+      "tags": [
+        "training",
+        "ernährung",
+        "cardio",
+        "erholung"
+      ],
+      "stripePriceId": "price_1To7bm48MRa2tbyIWLSWi4tH"
     },
     {
       "id": "meal-plan",
@@ -77,14 +91,21 @@
       "priceCents": 500,
       "priceLabel": "€5",
       "description": "Drei einfache Tagesstrukturen, die du sofort nachmachen kannst.",
-      "bullets": ["3 einfache Tagesstrukturen", "Teller-Methode", "Einkaufsliste"],
+      "bullets": [
+        "3 einfache Tagesstrukturen",
+        "Teller-Methode",
+        "Einkaufsliste"
+      ],
       "deliverablePaths": [
         "products/plans/mini-essensplan.html",
         "products/plans/mini-essensplan.md"
       ],
       "stripePriceEnvKey": "STRIPE_PRICE_MINI_ESSENSPLAN",
       "stripePriceIdPlaceholder": "price_REPLACE_mini_essensplan",
-      "tags": ["ernährung"]
+      "tags": [
+        "ernährung"
+      ],
+      "stripePriceId": "price_1To7bn48MRa2tbyI8Wf6EzNU"
     },
     {
       "id": "supplement-plan",
@@ -94,14 +115,21 @@
       "priceCents": 400,
       "priceLabel": "€4",
       "description": "Was Sinn macht — und was nicht. Ehrlich, ohne Verkaufsmasche.",
-      "bullets": ["Sinnvoll vs. unnötig", "Ehrliche Einordnung", "Kein Marken-Verkauf"],
+      "bullets": [
+        "Sinnvoll vs. unnötig",
+        "Ehrliche Einordnung",
+        "Kein Marken-Verkauf"
+      ],
       "deliverablePaths": [
         "products/plans/mini-supplement-guide.html",
         "products/plans/mini-supplement-guide.md"
       ],
       "stripePriceEnvKey": "STRIPE_PRICE_MINI_SUPPLEMENT_GUIDE",
       "stripePriceIdPlaceholder": "price_REPLACE_mini_supplement_guide",
-      "tags": ["supplements"]
+      "tags": [
+        "supplements"
+      ],
+      "stripePriceId": "price_1To7bo48MRa2tbyIEtcML4gb"
     },
     {
       "id": "cardio-plan",
@@ -111,14 +139,21 @@
       "priceCents": 400,
       "priceLabel": "€4",
       "description": "Cardio mit Plan statt planlosem Rennen — einfach in die Woche eingebaut.",
-      "bullets": ["LISS vs. Intervalle", "Konkrete Einheiten", "Neben dem Training"],
+      "bullets": [
+        "LISS vs. Intervalle",
+        "Konkrete Einheiten",
+        "Neben dem Training"
+      ],
       "deliverablePaths": [
         "products/plans/mini-cardio-plan.html",
         "products/plans/mini-cardio-plan.md"
       ],
       "stripePriceEnvKey": "STRIPE_PRICE_MINI_CARDIO_PLAN",
       "stripePriceIdPlaceholder": "price_REPLACE_mini_cardio_plan",
-      "tags": ["cardio"]
+      "tags": [
+        "cardio"
+      ],
+      "stripePriceId": "price_1To7bp48MRa2tbyINGzjB1iE"
     },
     {
       "id": "sleep-plan",
@@ -128,14 +163,22 @@
       "priceCents": 400,
       "priceLabel": "€4",
       "description": "Besser regenerieren: einfache Routinen für Schlaf und Erholung.",
-      "bullets": ["Schlafhygiene-Checkliste", "Einfache Abendroutine", "Ruhetage & Deload"],
+      "bullets": [
+        "Schlafhygiene-Checkliste",
+        "Einfache Abendroutine",
+        "Ruhetage & Deload"
+      ],
       "deliverablePaths": [
         "products/plans/mini-schlaf-erholung.html",
         "products/plans/mini-schlaf-erholung.md"
       ],
       "stripePriceEnvKey": "STRIPE_PRICE_MINI_SCHLAF_ERHOLUNG",
       "stripePriceIdPlaceholder": "price_REPLACE_mini_schlaf_erholung",
-      "tags": ["erholung", "schlaf"]
+      "tags": [
+        "erholung",
+        "schlaf"
+      ],
+      "stripePriceId": "price_1To7bq48MRa2tbyIFnf8B761"
     },
     {
       "id": "form-checklist",
@@ -145,14 +188,21 @@
       "priceCents": 300,
       "priceLabel": "€3",
       "description": "Saubere Ausführung im Gym: kurze Technik-Cues für die Grundübungen.",
-      "bullets": ["Cues für Grundübungen", "Stopp-Signale", "Sofort nutzbar"],
+      "bullets": [
+        "Cues für Grundübungen",
+        "Stopp-Signale",
+        "Sofort nutzbar"
+      ],
       "deliverablePaths": [
         "products/plans/mini-technik-checkliste.html",
         "products/plans/mini-technik-checkliste.md"
       ],
       "stripePriceEnvKey": "STRIPE_PRICE_MINI_TECHNIK_CHECKLISTE",
       "stripePriceIdPlaceholder": "price_REPLACE_mini_technik_checkliste",
-      "tags": ["technik"]
+      "tags": [
+        "technik"
+      ],
+      "stripePriceId": "price_1To7br48MRa2tbyIpVx2VXKx"
     }
   ]
 }

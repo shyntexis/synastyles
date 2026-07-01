@@ -55,6 +55,7 @@ function loadProducts() {
   catch (e) { return { products: [] }; }
 }
 function productMap() { return Object.fromEntries((loadProducts().products || []).map((p) => [p.id, p])); }
+function stripePriceId(product) { return process.env[product.stripePriceEnvKey] || product.stripePriceId || ''; }
 function euroLabel(c) { const v = c / 100; return Number.isInteger(v) ? `€${v}` : `€${v.toFixed(2).replace('.', ',')}`; }
 function esc(s) { return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 
@@ -130,7 +131,7 @@ function extractPlanInner(slug) {
 function statusPayload(req) {
   const products = loadProducts().products || [];
   const hasSecret = stripe.stripeConfigured();
-  const missing = products.filter((p) => !process.env[p.stripePriceEnvKey]).map((p) => p.stripePriceEnvKey);
+  const missing = products.filter((p) => !stripePriceId(p)).map((p) => p.stripePriceEnvKey);
   const user = auth.readSession(req);
   return {
     mode: hasSecret && missing.length === 0 ? 'live' : 'demo',
@@ -155,7 +156,7 @@ async function handleCreateSession(req, res) {
   const chosen = ids.map((id) => byId[id]);
   const totalCents = chosen.reduce((s, p) => s + p.priceCents, 0);
   const secret = process.env.STRIPE_SECRET_KEY;
-  const priceIds = chosen.map((p) => process.env[p.stripePriceEnvKey]);
+  const priceIds = chosen.map((p) => stripePriceId(p));
   const missing = chosen.filter((p, i) => !priceIds[i]).map((p) => p.stripePriceEnvKey);
 
   if (!secret || missing.length) {
