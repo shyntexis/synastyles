@@ -316,6 +316,7 @@ if (emailForm) {
       products = (json && json.products) || [];
       productMap = Object.fromEntries(products.map(p => [p.id, p]));
       renderCart();
+      if (location.hash === '#checkout') { openCheckout(); }
     })
     .catch(() => { if (cartButton) cartButton.hidden = true; });
 })();

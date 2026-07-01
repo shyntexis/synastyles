@@ -43,9 +43,13 @@ VIDEO_WORKFLOW.md                  KI-Coaching-Video-Produktion (Leitfaden)
 1. Plan in den Warenkorb → Checkout → **Stripe** (echte Zahlung, sobald Keys gesetzt).
 2. Stripe leitet zu `checkout-success.html?session_id=…`; der Server verifiziert die Zahlung
    (`/api/checkout/complete`) und/oder per **Webhook** und legt das Entitlement an (idempotent).
-   Die Success-Seite zeigt sofort einen **signierten Zugangslink pro Produkt** — dieser Link
-   trägt E-Mail + Produkt-ID direkt im (HMAC-signierten) Token und funktioniert **ohne** Store-/
-   Datenbank-Lookup, also auch wenn der Server/die Disk direkt danach neu startet.
+   Die Success-Seite ruft `/api/checkout/complete` mit **Retry/Backoff** auf (5 Versuche über
+   ~15-20s), falls Stripe/Render/Webhook kurz brauchen, und zeigt währenddessen klare
+   Statusmeldungen. Bei Erfolg gibt es pro Produkt einen **signierten Zugangslink** (mit
+   „Link kopieren"-Button) — dieser Link trägt E-Mail + Produkt-ID direkt im (HMAC-signierten)
+   Token und funktioniert **ohne** Store-/Datenbank-Lookup, also auch wenn der Server/die Disk
+   direkt danach neu startet. Klappt die Bestätigung nach allen Versuchen nicht, wird das ehrlich
+   angezeigt (keine Freischaltung behauptet) plus ein Support-Mailto mit Session-ID.
 3. Käufer kann sich optional mit Google anmelden (`account.html`), um Käufe später gebündelt im
    Konto zu sehen — für den Zugang selbst ist das nicht nötig.
 4. Der Zugangslink `/access/<token>` funktioniert direkt, ohne Login, für die Käufer-E-Mail.
@@ -69,6 +73,15 @@ VIDEO_WORKFLOW.md                  KI-Coaching-Video-Produktion (Leitfaden)
 ## Preise
 
 Starter €9 · Gym + Ernährung €19 · Komplett-Paket €39 · Mini-Pläne €5/€4/€4/€4/€3.
+
+## SEO
+
+`robots.txt` erlaubt öffentliche Seiten und sperrt `/api/`, `/auth/`, `/access/`,
+`/products/plans/`, `/server/`; verweist auf `sitemap.xml`. `sitemap.xml` listet nur die
+öffentlichen, indexierbaren Seiten (`/`, `account.html`, `impressum.html`, `datenschutz.html`,
+`agb.html`, `widerruf.html`) — Checkout-Success/-Cancel sind bewusst **nicht** enthalten und
+tragen weiterhin `<meta name="robots" content="noindex">`. `index.html` hat Title/Description/
+Canonical/OG/Twitter-Tags mit der Live-URL.
 
 ## Live gehen
 

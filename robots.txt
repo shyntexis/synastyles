@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /auth/
+Disallow: /access/
+Disallow: /products/plans/
+Disallow: /server/
+Disallow: /.env
+Disallow: /.git
+Disallow: /checkout-success.html
+Disallow: /checkout-cancel.html
+
+Sitemap: https://zenith-gym-coaching-site.onrender.com/sitemap.xml

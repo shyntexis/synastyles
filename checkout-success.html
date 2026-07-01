@@ -23,10 +23,14 @@
     h1{margin:0;font-size:clamp(26px,4vw,38px);letter-spacing:-.03em;line-height:1.05}
     .lead{margin:14px 0 0;color:var(--muted);font-size:17px}
     .rows{margin:24px 0 0;display:grid;gap:10px}
-    .row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 16px;border:1px solid var(--card-line);border-radius:14px;background:rgba(255,255,255,.04)}
+    .row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:15px 16px;border:1px solid var(--card-line);border-radius:14px;background:rgba(255,255,255,.04)}
     .row strong{font-size:15px}
-    .row a{padding:9px 15px;border-radius:999px;border:1px solid var(--line);background:rgba(231,190,108,.12);color:var(--gold2);font-size:13px;font-weight:800;text-decoration:none}
+    .row-actions{display:flex;gap:8px;flex-wrap:wrap}
+    .row a,.row button{font:inherit;padding:9px 15px;border-radius:999px;border:1px solid var(--line);background:rgba(231,190,108,.12);color:var(--gold2);font-size:13px;font-weight:800;text-decoration:none;cursor:pointer}
+    .row a:hover,.row button:hover{color:#fff}
     .note{margin:22px 0 0;padding:14px 16px;border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:12px;background:rgba(231,190,108,.07);color:#e7e0cf;font-size:13.5px;line-height:1.55}
+    .help{margin:22px 0 0;padding:14px 16px;border:1px solid var(--card-line);border-radius:12px;background:rgba(255,255,255,.04);color:var(--muted);font-size:13.5px;line-height:1.6}
+    .help .button{margin-top:12px;padding:0 18px;min-height:40px;font-size:13.5px}
     .actions{margin:24px 0 0;display:flex;gap:12px;flex-wrap:wrap}
     .button{min-height:48px;display:inline-flex;align-items:center;justify-content:center;padding:0 22px;border-radius:999px;font-weight:800;font-size:15px;text-decoration:none;cursor:pointer}
     .primary{color:#170f04;background:linear-gradient(135deg,#ffe9bd,#e7be6c 50%,#f0a23a)}
@@ -46,6 +50,7 @@
     <p class="lead" id="lead">Einen Moment, wir bestätigen deine Bestellung.</p>
     <div class="rows hidden" id="rows"></div>
     <div class="note hidden" id="note"></div>
+    <div class="help hidden" id="help"></div>
     <div class="actions">
       <a class="button primary" href="account.html">Zu meinem Konto</a>
       <a class="button ghost" href="index.html">Startseite</a>
@@ -65,30 +70,118 @@
       const lead = document.getElementById('lead');
       const rows = document.getElementById('rows');
       const note = document.getElementById('note');
+      const help = document.getElementById('help');
       const ico = document.getElementById('ico');
 
-      function fail(msg) { ico.textContent = '…'; title.textContent = 'Bestellung'; lead.textContent = msg; }
-
-      if (!sid) { fail('Vielen Dank! Sobald deine Zahlung bestätigt ist, findest du deine Pläne in deinem Konto.'); return; }
-
-      fetch('/api/checkout/complete?session_id=' + encodeURIComponent(sid))
-        .then(r => r.json())
-        .then(d => {
-          if (!d.ok) { fail(d.message || 'Wir konnten die Zahlung noch nicht bestätigen. Schau in einem Moment in deinem Konto nach.'); return; }
-          title.textContent = 'Danke! Zahlung bestätigt.';
-          if (d.products && d.products.some(p => p.accessPath)) {
-            lead.textContent = 'Deine Pläne sind freigeschaltet:';
-            rows.classList.remove('hidden');
-            rows.innerHTML = d.products.map(p => `<div class="row"><strong>${esc(p.title)}</strong>${p.accessPath ? `<a href="${p.accessPath}">Plan öffnen</a>` : ''}</div>`).join('');
-          } else {
-            lead.innerHTML = 'Deine Bestellung für <strong>' + esc(d.email || 'deine E-Mail') + '</strong> ist da. Melde dich mit <strong>derselben Google-E-Mail</strong> an, um deine Pläne zu öffnen.';
-            note.classList.remove('hidden');
-            note.innerHTML = 'Dein Zugang ist an deine E-Mail gebunden. <a href="account.html" style="color:#ffe2a0">Jetzt im Konto anmelden →</a>';
-          }
-        })
-        .catch(() => fail('Verbindung zum Server fehlgeschlagen. Deine Pläne findest du nach dem Login in deinem Konto.'));
-
       function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+
+      function supportMailto(sessionId) {
+        const subject = 'ZENITH Bestellung prüfen';
+        const lines = [
+          sessionId ? ('Session-ID: ' + sessionId) : '(keine Session-ID in der URL gefunden)',
+          '',
+          'Bitte gib hier deine Kauf-E-Mail-Adresse an: '
+        ];
+        return 'mailto:synastyles@gmail.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(lines.join('\n'));
+      }
+
+      function showHelp(sessionId, text) {
+        help.classList.remove('hidden');
+        help.innerHTML = esc(text) +
+          '<div><a class="button ghost" href="' + supportMailto(sessionId) + '">Support kontaktieren</a></div>';
+      }
+
+      function fail(msg, opts) {
+        opts = opts || {};
+        ico.textContent = opts.icon || '…';
+        title.textContent = opts.title || 'Bestellung';
+        lead.textContent = msg;
+      }
+
+      function copyLink(btn) {
+        const path = btn.getAttribute('data-path');
+        const full = location.origin + path;
+        const label = btn.textContent;
+        function done(ok) {
+          btn.textContent = ok ? 'Kopiert ✓' : 'Bitte manuell kopieren';
+          setTimeout(() => { btn.textContent = label; }, 2200);
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(full).then(() => done(true)).catch(() => done(false));
+        } else {
+          try {
+            const ta = document.createElement('textarea');
+            ta.value = full; ta.style.position = 'fixed'; ta.style.opacity = '0';
+            document.body.appendChild(ta); ta.focus(); ta.select();
+            const ok = document.execCommand('copy');
+            document.body.removeChild(ta);
+            done(ok);
+          } catch (e) { done(false); }
+        }
+      }
+
+      function renderProducts(products) {
+        rows.classList.remove('hidden');
+        rows.innerHTML = products.map((p) => {
+          const openLink = p.accessPath ? `<a href="${esc(p.accessPath)}">Plan öffnen</a>` : '';
+          const copyBtn = p.accessPath ? `<button type="button" class="copy-btn" data-path="${esc(p.accessPath)}">Link kopieren</button>` : '';
+          return `<div class="row"><strong>${esc(p.title)}</strong><span class="row-actions">${openLink}${copyBtn}</span></div>`;
+        }).join('');
+        rows.querySelectorAll('.copy-btn').forEach((btn) => btn.addEventListener('click', () => copyLink(btn)));
+      }
+
+      if (!sid) {
+        ico.textContent = 'i';
+        title.textContent = 'Keine Bestellnummer gefunden';
+        lead.textContent = 'Falls du gerade bezahlt hast, prüfe in ein bis zwei Minuten dein Konto — deine Pläne erscheinen dort automatisch. Kommt dort nichts an, melde dich gern bei uns.';
+        showHelp(null, 'Wir helfen dir schnell weiter, wenn du uns kurz deine Kauf-E-Mail schickst:');
+        return;
+      }
+
+      // Stripe/Render/Webhook können kurz nacheinander laufen — daher mehrere Versuche
+      // über ~15-20s, bevor wir dem Käufer einen echten Fehler zeigen.
+      const RETRY_DELAYS_MS = [0, 2000, 3000, 4000, 6000];
+      const RETRY_MESSAGES = [
+        'Zahlung wird bestätigt …',
+        'Noch ein Moment — Stripe kann kurz brauchen …',
+        'Fast geschafft, wir prüfen weiter …',
+        'Letzte Prüfung läuft …',
+        'Letzter Versuch …'
+      ];
+      let attempt = 0;
+
+      function tryComplete() {
+        lead.textContent = RETRY_MESSAGES[Math.min(attempt, RETRY_MESSAGES.length - 1)];
+        fetch('/api/checkout/complete?session_id=' + encodeURIComponent(sid))
+          .then((r) => r.json())
+          .then((d) => {
+            if (d && d.ok) {
+              title.textContent = 'Danke! Zahlung bestätigt.';
+              if (d.products && d.products.some((p) => p.accessPath)) {
+                lead.textContent = 'Deine Pläne sind freigeschaltet:';
+                renderProducts(d.products);
+                note.classList.remove('hidden');
+                note.textContent = 'Speichere diesen Link gut sichtbar — er ist dein Zugang zu den Plänen. Stripe schickt dir in der Regel zusätzlich eine Zahlungsbestätigung per E-Mail; von uns selbst kommt aktuell keine separate Bestell-E-Mail.';
+              } else {
+                lead.innerHTML = 'Deine Bestellung für <strong>' + esc(d.email || 'deine E-Mail') + '</strong> ist da.';
+                note.classList.remove('hidden');
+                note.innerHTML = 'Optional: Melde dich im Konto an, um deine Käufe gebündelt zu sehen. <a href="account.html" style="color:#ffe2a0">Zum Konto →</a>';
+              }
+              return;
+            }
+            attempt++;
+            if (attempt < RETRY_DELAYS_MS.length) { setTimeout(tryComplete, RETRY_DELAYS_MS[attempt]); return; }
+            fail((d && d.message) || 'Wir konnten deine Zahlung noch nicht endgültig bestätigen.', { icon: '!', title: 'Noch nicht bestätigt' });
+            showHelp(sid, 'Das kann an einer kurzen Verzögerung liegen. Falls sich das nicht von selbst klärt, melde dich gern bei uns — mit deiner Kauf-E-Mail geht die Prüfung am schnellsten:');
+          })
+          .catch(() => {
+            attempt++;
+            if (attempt < RETRY_DELAYS_MS.length) { setTimeout(tryComplete, RETRY_DELAYS_MS[attempt]); return; }
+            fail('Die Verbindung zum Server war gerade instabil. Wir konnten deine Zahlung noch nicht bestätigen.', { icon: '!', title: 'Verbindung unterbrochen' });
+            showHelp(sid, 'Bitte melde dich bei uns, damit wir deine Zahlung manuell prüfen können:');
+          });
+      }
+      tryComplete();
     })();
   </script>
 </body>
