@@ -123,9 +123,10 @@
       function renderProducts(products) {
         rows.classList.remove('hidden');
         rows.innerHTML = products.map((p) => {
-          const openLink = p.accessPath ? `<a href="${esc(p.accessPath)}">Plan öffnen</a>` : '';
+          const openLink = p.accessPath ? `<a href="${esc(p.accessPath)}">Online ansehen</a>` : '';
+          const pdfLink = p.downloadPath ? `<a href="${esc(p.downloadPath)}">PDF herunterladen</a>` : '';
           const copyBtn = p.accessPath ? `<button type="button" class="copy-btn" data-path="${esc(p.accessPath)}">Link kopieren</button>` : '';
-          return `<div class="row"><strong>${esc(p.title)}</strong><span class="row-actions">${openLink}${copyBtn}</span></div>`;
+          return `<div class="row"><strong>${esc(p.title)}</strong><span class="row-actions">${openLink}${pdfLink}${copyBtn}</span></div>`;
         }).join('');
         rows.querySelectorAll('.copy-btn').forEach((btn) => btn.addEventListener('click', () => copyLink(btn)));
       }
@@ -161,7 +162,7 @@
                 lead.textContent = 'Deine Pläne sind freigeschaltet:';
                 renderProducts(d.products);
                 note.classList.remove('hidden');
-                note.textContent = 'Speichere diesen Link gut sichtbar — er ist dein Zugang zu den Plänen. Stripe schickt dir in der Regel zusätzlich eine Zahlungsbestätigung per E-Mail; von uns selbst kommt aktuell keine separate Bestell-E-Mail.';
+                note.textContent = 'Speichere diesen Link gut sichtbar — er ist dein Zugang zu den Plänen. Du kannst jeden Plan online öffnen oder als PDF herunterladen. Wenn E-Mail-Versand aktiviert ist, bekommst du zusätzlich eine Nachricht mit den Links und PDFs.';
               } else {
                 lead.innerHTML = 'Deine Bestellung für <strong>' + esc(d.email || 'deine E-Mail') + '</strong> ist da.';
                 note.classList.remove('hidden');

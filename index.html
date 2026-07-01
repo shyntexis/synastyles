@@ -39,6 +39,7 @@
           <a href="account.html">Konto</a>
           <a class="nav-cta" href="#pakete">Plan ansehen</a>
         </div>
+        <button class="lang-toggle" id="langToggle" type="button" aria-label="Sprache wechseln">DE</button>
         <button class="cart-button" id="cartButton" type="button" aria-label="Warenkorb öffnen" aria-haspopup="dialog">
           <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 4h2l2.4 12.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6L22 8H6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="20.6" r="1.3" fill="currentColor"/><circle cx="18" cy="20.6" r="1.3" fill="currentColor"/></svg>
           <span class="cart-label">Warenkorb</span>
@@ -98,6 +99,7 @@
         <span class="eyebrow">Coaching-Pakete</span>
         <h2>Wähle deinen Plan.</h2>
         <p>Faire Launch-Preise zum Start. Du zahlst wenig, bekommst aber einen klaren, umsetzbaren Plan. Die Buttons legen deine Auswahl direkt in den Warenkorb; der Checkout leitet zur sicheren Stripe-Zahlung weiter.</p>
+        <p class="launch-hint" id="launchHint"><span class="launch-badge">Launch</span> Hast du einen Rabatt- oder Creator-Code? Löse ihn direkt im Checkout ein.</p>
       </div>
 
       <div class="package-grid">
@@ -165,6 +167,25 @@
       </div>
     </section>
 
+    <section class="trust-strip" aria-label="Warum ZENITH" data-reveal>
+      <div class="trust-item">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.4-3 8.3-7 9.5C8 22.3 5 18.4 5 14V6l7-3z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <b>Sichere Zahlung</b><span>Bezahlung läuft verschlüsselt über Stripe. Deine Kartendaten sehen wir nie.</span>
+      </div>
+      <div class="trust-item">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+        <b>Sofort verfügbar</b><span>Direkt nach der Zahlung bekommst du deinen persönlichen Zugangslink.</span>
+      </div>
+      <div class="trust-item">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 100-8 4 4 0 000 8z" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M5 20c0-3.3 3.1-6 7-6s7 2.7 7 6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        <b>Persönlicher Zugang</b><span>Deine Pläne liegen unter einem eigenen Link — online lesen oder als PDF laden.</span>
+      </div>
+      <div class="trust-item">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h9l3 3v13H6z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 12h6M9 16h6M9 8h3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        <b>Kein Abo</b><span>Einmal zahlen, dauerhaft behalten. Keine versteckten Kosten, keine Verlängerung.</span>
+      </div>
+    </section>
+
     <section id="ablauf" class="steps-section">
       <div class="section-head narrow" data-reveal>
         <span class="eyebrow">So läuft's ab</span>
@@ -195,6 +216,38 @@
       </div>
     </section>
 
+    <section id="roadmap" class="roadmap-section">
+      <div class="section-head narrow" data-reveal>
+        <span class="eyebrow">In Arbeit</span>
+        <h2>Bald bei ZENITH.</h2>
+        <p>Diese Pläne sind in Vorbereitung. Trag dich in den Newsletter ein, dann sagen wir dir Bescheid, sobald sie live sind — oft zuerst mit einem Launch-Rabatt.</p>
+      </div>
+      <div class="roadmap-grid" data-reveal>
+        <div class="roadmap-card"><span class="roadmap-tag">Geplant</span><h3>7-Day Gym Reset</h3><p>Eine Woche klare Struktur zum Wiedereinstieg — Tag für Tag.</p></div>
+        <div class="roadmap-card"><span class="roadmap-tag">Geplant</span><h3>30-Day Challenge</h3><p>Ein Monat mit festem Fahrplan, Check-ins und Progression.</p></div>
+        <div class="roadmap-card"><span class="roadmap-tag">Geplant</span><h3>Home-Workout Plan</h3><p>Training ohne Geräte für zuhause oder unterwegs.</p></div>
+        <div class="roadmap-card"><span class="roadmap-tag">Geplant</span><h3>Meal-Prep Cheatsheet</h3><p>Vorkochen ohne Stress: Baukasten statt starrer Rezepte.</p></div>
+        <div class="roadmap-card"><span class="roadmap-tag">Geplant</span><h3>Bulk / Cut Starter</h3><p>Auf- oder Abbau sauber aufgesetzt, mit realistischer Kalorienlogik.</p></div>
+        <div class="roadmap-card"><span class="roadmap-tag">Idee</span><h3>Video-Analyse Light</h3><p>Schick ein kurzes Übungsvideo, bekomm konkretes Technik-Feedback.</p></div>
+      </div>
+    </section>
+
+    <section id="faq" class="faq-section">
+      <div class="section-head narrow" data-reveal>
+        <span class="eyebrow">Häufige Fragen</span>
+        <h2>Kurz erklärt.</h2>
+        <p>Alles, was du vor dem Kauf wissen willst. Noch eine Frage offen? Schreib mir einfach.</p>
+      </div>
+      <div class="faq-list" data-reveal>
+        <details class="faq-item"><summary>Wie bekomme ich meinen Plan nach dem Kauf?</summary><p>Direkt nach der Zahlung über Stripe erhältst du einen persönlichen Zugangslink. Darüber liest du deinen Plan online oder lädst ihn als PDF herunter. Wenn du eine E-Mail hinterlegst, schicken wir dir den Link zusätzlich zu.</p></details>
+        <details class="faq-item"><summary>Brauche ich ein Konto oder einen Google-Login?</summary><p>Nein. Der Kauf läuft über den Stripe-Checkout und einen persönlichen Zugangslink. Ein Konto-Login ist optional und nur dafür da, deine Käufe gebündelt an einem Ort zu sehen.</p></details>
+        <details class="faq-item"><summary>Wie funktionieren Rabatt- und Creator-Codes?</summary><p>Du gibst deinen Code im Checkout ein. Ist ein passender Rabatt bei Stripe aktiv, wird er direkt vom Preis abgezogen — du zahlst nie mehr und nie weniger, als dir angezeigt wird. Ist ein Code noch nicht bei Stripe hinterlegt, gilt der reguläre Preis, und wir behalten den Code für dich im Blick.</p></details>
+        <details class="faq-item"><summary>Ist das ein Abo?</summary><p>Nein. Du zahlst einmal und behältst deinen Plan dauerhaft. Keine automatische Verlängerung, keine versteckten Kosten.</p></details>
+        <details class="faq-item"><summary>Für wen sind die Pläne gedacht?</summary><p>Für Einsteiger und Wiedereinsteiger, die eine klare Struktur wollen statt sich alles selbst zusammenzusuchen. Die Inhalte sind allgemeine Fitness- und Trainingsinformationen und ersetzen keine medizinische Beratung.</p></details>
+        <details class="faq-item"><summary>Kann ich mein Geld zurückbekommen?</summary><p>Es handelt sich um digitale Inhalte, die sofort bereitgestellt werden. Die Details zum Widerruf findest du in der <a href="widerruf.html">Widerrufsbelehrung</a>. Bei Problemen melde dich einfach — wir finden eine faire Lösung.</p></details>
+      </div>
+    </section>
+
     <section id="kontakt" class="contact-section" data-reveal>
       <div class="contact-intro">
         <span class="eyebrow">Kontakt</span>
@@ -213,6 +266,32 @@
         </div>
         <small id="emailStatus">Öffnet deine E-Mail-App mit einer vorbereiteten Nachricht an mich.</small>
       </form>
+    </section>
+
+    <section id="newsletter" class="newsletter-section" data-reveal>
+      <div class="newsletter-card">
+        <div class="newsletter-copy">
+          <span class="eyebrow">Newsletter</span>
+          <h2>Trainings-Tipps &amp; Launch-Angebote.</h2>
+          <p>Ein kurzer Impuls ab und zu: umsetzbare Tipps, neue Pläne und Rabattcodes zuerst. Kein Spam, jederzeit abbestellbar.</p>
+        </div>
+        <form class="newsletter-form" id="newsletterForm" novalidate>
+          <label class="sr-only" for="newsletterEmail">E-Mail-Adresse</label>
+          <div class="newsletter-row">
+            <input id="newsletterEmail" type="email" required placeholder="deine@email.de" autocomplete="email" />
+            <label class="sr-only" for="newsletterInterest">Interesse</label>
+            <select id="newsletterInterest" aria-label="Woran hast du Interesse?">
+              <option value="">Interesse (optional)</option>
+              <option value="training">Training</option>
+              <option value="ernaehrung">Ernährung</option>
+              <option value="komplett">Komplett-Paket</option>
+              <option value="angebote">Nur Angebote</option>
+            </select>
+            <button class="button primary" type="submit" id="newsletterSubmit">Eintragen</button>
+          </div>
+          <p class="newsletter-status" id="newsletterStatus" role="status" aria-live="polite">Mit dem Eintragen stimmst du zu, gelegentlich E-Mails von ZENITH zu erhalten.</p>
+        </form>
+      </div>
     </section>
 
     <section class="final-cta" data-reveal>
@@ -254,6 +333,14 @@
       <span class="eyebrow">Checkout</span>
       <h2 id="checkoutTitle">Bestellung abschließen</h2>
       <div class="checkout-summary" id="checkoutSummary"></div>
+      <div class="checkout-discount">
+        <label for="checkoutCode">Rabatt- oder Creator-Code <span>(optional)</span></label>
+        <div class="discount-row">
+          <input id="checkoutCode" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="z. B. LAUNCH20" />
+          <button class="button ghost" type="button" id="applyCode">Anwenden</button>
+        </div>
+        <p class="discount-status" id="discountStatus"></p>
+      </div>
       <div class="checkout-total"><span>Gesamt</span><strong id="checkoutTotal">€0</strong></div>
       <form class="checkout-form" id="checkoutForm" novalidate>
         <label for="checkoutEmail">E-Mail für die Lieferung</label>
@@ -289,6 +376,21 @@
       <p class="legal-note">Hinweis: Die Inhalte sind allgemeine Fitness- und Trainingsinformationen und ersetzen keine medizinische Beratung. Bei Fragen erreichst du uns über synastyles@gmail.com.</p>
     </div>
   </footer>
+
+
+
+  <div class="language-modal" id="languageModal" hidden>
+    <button class="language-backdrop" type="button" data-lang-choice="de" aria-label="Sprachauswahl schließen"></button>
+    <div class="language-card" role="dialog" aria-modal="true" aria-labelledby="languageTitle">
+      <span class="eyebrow">Sprache · Language</span>
+      <h2 id="languageTitle">Welche Sprache möchtest du?</h2>
+      <p>Wähle Deutsch oder Englisch. Du kannst später jederzeit oben in der Navigation wechseln.</p>
+      <div class="language-actions">
+        <button class="language-choice primary" type="button" data-lang-choice="de">Deutsch</button>
+        <button class="language-choice" type="button" data-lang-choice="en">English</button>
+      </div>
+    </div>
+  </div>
 
   <script src="app.js"></script>
 </body>

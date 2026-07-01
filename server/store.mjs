@@ -17,12 +17,13 @@ const nowIso = () => new Date().toISOString();
 const canon = (e) => String(e || '').trim().toLowerCase();
 const rid = (p) => p + '_' + randomBytes(12).toString('hex');
 
-function emptyDb() { return { users: [], entitlements: [], processedSessions: {} }; }
+function emptyDb() { return { users: [], entitlements: [], processedSessions: {}, purchaseEmailsSent: {}, newsletter: [], discountRedemptions: {} }; }
 
 async function readDb() {
   try {
     const d = JSON.parse(await readFile(DB_PATH, 'utf8'));
-    d.users ||= []; d.entitlements ||= []; d.processedSessions ||= {};
+    d.users ||= []; d.entitlements ||= []; d.processedSessions ||= {}; d.purchaseEmailsSent ||= {};
+    d.newsletter ||= []; d.discountRedemptions ||= {};
     return d;
   } catch (e) { return emptyDb(); }
 }
@@ -114,5 +115,81 @@ export async function fulfillSession(sessionId, email, productIds) {
     }
     if (sessionId) db.processedSessions[sessionId] = db.processedSessions[sessionId] || nowIso();
     return { already, entitlements: ents };
+  });
+}
+
+
+// ---- Newsletter subscribers (JSON store, deduped by normalized email) ----
+// Simple double-opt-in-ready list. No external mail provider required.
+export async function addNewsletterSubscriber({ email, source, interest } = {}) {
+  const e = canon(email);
+  if (!e) return { ok: false, reason: 'invalid' };
+  return withDb((db) => {
+    db.newsletter ||= [];
+    const existing = db.newsletter.find((x) => x.email === e);
+    if (existing) {
+      if (source && !existing.source) existing.source = String(source).slice(0, 80);
+      if (interest) existing.interest = String(interest).slice(0, 80);
+      existing.updatedAt = nowIso();
+      return { ok: true, already: true };
+    }
+    db.newsletter.push({
+      id: rid('n'),
+      email: e,
+      source: (source ? String(source) : 'website').slice(0, 80),
+      interest: (interest ? String(interest) : '').slice(0, 80),
+      createdAt: nowIso()
+    });
+    return { ok: true, already: false };
+  });
+}
+
+export async function getNewsletterCount() {
+  const db = await readDb();
+  return (db.newsletter || []).length;
+}
+
+// ---- Discount redemption tracking (best-effort, idempotent per session) ----
+const canonCode = (c) => String(c || '').trim().toUpperCase();
+
+export async function getDiscountRedemptionCount(code) {
+  const c = canonCode(code);
+  if (!c) return 0;
+  const db = await readDb();
+  const r = db.discountRedemptions && db.discountRedemptions[c];
+  return r && Number.isFinite(r.count) ? r.count : 0;
+}
+
+export async function recordDiscountRedemption(code, { sessionId, affiliateName, source } = {}) {
+  const c = canonCode(code);
+  if (!c) return false;
+  return withDb((db) => {
+    db.discountRedemptions ||= {};
+    const r = db.discountRedemptions[c] || { code: c, count: 0, sessions: [] };
+    r.sessions ||= [];
+    if (sessionId && r.sessions.includes(sessionId)) return true; // idempotent
+    r.count = (r.count || 0) + 1;
+    if (sessionId) r.sessions.push(sessionId);
+    if (affiliateName) r.affiliateName = String(affiliateName).slice(0, 120);
+    if (source) r.source = String(source).slice(0, 80);
+    r.updatedAt = nowIso();
+    db.discountRedemptions[c] = r;
+    return true;
+  });
+}
+
+
+export async function hasPurchaseEmailSent(sessionId) {
+  if (!sessionId) return false;
+  const db = await readDb();
+  return !!(db.purchaseEmailsSent && db.purchaseEmailsSent[sessionId]);
+}
+
+export async function markPurchaseEmailSent(sessionId) {
+  if (!sessionId) return false;
+  return withDb((db) => {
+    db.purchaseEmailsSent ||= {};
+    db.purchaseEmailsSent[sessionId] = db.purchaseEmailsSent[sessionId] || nowIso();
+    return true;
   });
 }

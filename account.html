@@ -25,6 +25,7 @@
     .acc-user .grow{flex:1}
     .prod-list{display:grid;gap:12px;margin-top:18px}
     .prod-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 18px;border:1px solid var(--card-line);border-radius:16px;background:var(--card)}
+    .prod-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
     .prod-row .pt{display:grid;gap:2px}
     .prod-row .pt strong{font-size:16px}
     .prod-row .pt span{color:var(--soft);font-size:12px;text-transform:uppercase;letter-spacing:.1em}
@@ -131,7 +132,7 @@
       if (me.user.picture) { const a = $('avatar'); a.innerHTML = ''; const img = document.createElement('img'); img.src = me.user.picture; img.alt = ''; img.style.cssText = 'width:100%;height:100%;border-radius:50%;object-fit:cover'; a.appendChild(img); }
       const list = $('prodList');
       if (me.products && me.products.length) {
-        list.innerHTML = me.products.map(p => `<div class="prod-row"><div class="pt"><span>Plan</span><strong>${escapeHtml(p.title)}</strong></div><a class="button primary" href="${p.accessPath}">Plan öffnen</a></div>`).join('');
+        list.innerHTML = me.products.map(p => `<div class="prod-row"><div class="pt"><span>Plan</span><strong>${escapeHtml(p.title)}</strong></div><div class="prod-actions"><a class="button primary" href="${p.accessPath}">Online ansehen</a>${p.downloadPath ? `<a class="button ghost" href="${p.downloadPath}">PDF herunterladen</a>` : ''}</div></div>`).join('');
         $('noProds').classList.add('hidden');
       } else {
         list.innerHTML = '';

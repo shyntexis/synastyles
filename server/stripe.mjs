@@ -25,7 +25,12 @@ async function get(path) {
   return { ok: res.ok, status: res.status, json };
 }
 
-export async function createCheckoutSession({ priceIds, productIds, email, site }) {
+// couponId: a real Stripe coupon id → the discounted amount is what Stripe truly charges.
+// allowPromotionCodes: show Stripe's own promo-code box at checkout (buyer types a
+//   Stripe-native promotion code). Stripe forbids combining `discounts` with
+//   `allow_promotion_codes`, so an explicit coupon wins and the box is suppressed.
+// metadata: extra key/values (e.g. discount_code, affiliate) merged into session metadata.
+export async function createCheckoutSession({ priceIds, productIds, email, site, couponId, allowPromotionCodes, metadata }) {
   const params = new URLSearchParams();
   params.set('mode', 'payment');
   params.set('success_url', `${site}/checkout-success.html?session_id={CHECKOUT_SESSION_ID}`);
@@ -37,6 +42,16 @@ export async function createCheckoutSession({ priceIds, productIds, email, site 
   });
   params.set('metadata[product_ids]', productIds.join(','));
   if (email) params.set('metadata[email]', email);
+  if (metadata && typeof metadata === 'object') {
+    for (const [k, v] of Object.entries(metadata)) {
+      if (v != null && String(v) !== '') params.set(`metadata[${k}]`, String(v).slice(0, 480));
+    }
+  }
+  if (couponId) {
+    params.set('discounts[0][coupon]', String(couponId));
+  } else if (allowPromotionCodes) {
+    params.set('allow_promotion_codes', 'true');
+  }
   return post('/checkout/sessions', params);
 }
 

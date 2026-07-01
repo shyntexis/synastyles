@@ -1,0 +1,69 @@
+{
+  "note": "Rabatt-/Promo-/Affiliate-Codes für ZENITH. Einfach editierbar. WICHTIG — Checkout-Wahrheit: Ein hier hinterlegter Rabatt reduziert den bei Stripe TATSAECHLICH berechneten Betrag NUR dann, wenn 'stripeCouponId' (oder 'stripeCouponEnvKey') auf einen echten Stripe-Coupon zeigt. Ohne verknüpften Stripe-Coupon ist der Code eine Vorschau/Marketing-Anzeige und es wird der REGULAERE Preis berechnet. So verknüpfst du einen echten Rabatt: 1) Im Stripe-Dashboard einen Coupon anlegen (z. B. 20% off), 2) dessen ID (coupon_XXX) hier in 'stripeCouponId' eintragen ODER als ENV-Variable (Name in 'stripeCouponEnvKey') hinterlegen. Zusaetzlich ist bei Live-Checkout 'allow_promotion_codes' aktiv: buyer koennen einen direkt in Stripe angelegten Promotion-Code an der Kasse eingeben. Diese Datei wird NICHT oeffentlich ausgeliefert (der Server blockt /data/discount-codes.json); die Validierung laeuft ueber /api/discount/validate.",
+  "codes": [
+    {
+      "code": "LAUNCH20",
+      "active": true,
+      "percentOff": 20,
+      "amountOffCents": null,
+      "campaignName": "ZENITH Launch 2026",
+      "affiliateName": null,
+      "source": "launch",
+      "startsAt": null,
+      "endsAt": null,
+      "maxRedemptions": null,
+      "minSubtotalCents": 0,
+      "appliesToProductIds": null,
+      "stripeCouponId": "",
+      "stripeCouponEnvKey": "STRIPE_COUPON_LAUNCH20"
+    },
+    {
+      "code": "RESET15",
+      "active": true,
+      "percentOff": 15,
+      "amountOffCents": null,
+      "campaignName": "7-Day Gym Reset",
+      "affiliateName": null,
+      "source": "reset-serie",
+      "startsAt": null,
+      "endsAt": null,
+      "maxRedemptions": null,
+      "minSubtotalCents": 0,
+      "appliesToProductIds": null,
+      "stripeCouponId": "",
+      "stripeCouponEnvKey": "STRIPE_COUPON_RESET15"
+    },
+    {
+      "code": "FRIEND10",
+      "active": true,
+      "percentOff": 10,
+      "amountOffCents": null,
+      "campaignName": "Freunde-Empfehlung",
+      "affiliateName": null,
+      "source": "referral",
+      "startsAt": null,
+      "endsAt": null,
+      "maxRedemptions": null,
+      "minSubtotalCents": 0,
+      "appliesToProductIds": null,
+      "stripeCouponId": "",
+      "stripeCouponEnvKey": "STRIPE_COUPON_FRIEND10"
+    },
+    {
+      "code": "CREATOR-LEA",
+      "active": false,
+      "percentOff": 15,
+      "amountOffCents": null,
+      "campaignName": "Creator-Affiliate (Vorlage)",
+      "affiliateName": "Lea (Beispiel)",
+      "source": "affiliate",
+      "startsAt": null,
+      "endsAt": null,
+      "maxRedemptions": 500,
+      "minSubtotalCents": 0,
+      "appliesToProductIds": null,
+      "stripeCouponId": "",
+      "stripeCouponEnvKey": "STRIPE_COUPON_CREATOR_LEA"
+    }
+  ]
+}

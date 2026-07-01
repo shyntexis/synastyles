@@ -68,6 +68,42 @@ if (emailForm) {
   });
 }
 
+/* ===================== Newsletter ===================== */
+(function newsletter() {
+  const form = document.getElementById('newsletterForm');
+  if (!form) return;
+  const input = document.getElementById('newsletterEmail');
+  const interestEl = document.getElementById('newsletterInterest');
+  const status = document.getElementById('newsletterStatus');
+  const submit = document.getElementById('newsletterSubmit');
+  const setStat = (msg, kind) => { if (status) { status.className = 'newsletter-status' + (kind ? ' ' + kind : ''); status.textContent = msg; } };
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const email = input ? input.value.trim() : '';
+    if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { setStat('Bitte gib eine gültige E-Mail-Adresse ein.', 'error'); if (input) input.focus(); return; }
+    if (submit) submit.disabled = true;
+    setStat('Einen Moment …', null);
+    let data = null;
+    try {
+      const res = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, source: 'landingpage', interest: interestEl ? interestEl.value : '' })
+      });
+      data = await res.json().catch(() => null);
+    } catch (e) { data = null; }
+    if (submit) submit.disabled = false;
+    if (data && data.ok) {
+      setStat(data.message || 'Eingetragen! Danke, dass du dabei bist.', 'ok');
+      if (input) input.value = '';
+    } else {
+      const msg = (data && data.message) ? data.message : 'Eintragen ist gerade nicht möglich (evtl. statische Vorschau). Schreib mir gern direkt per E-Mail.';
+      setStat(msg, 'error');
+    }
+  });
+})();
+
 /* ===================== Warenkorb + Checkout ===================== */
 (function cartSystem() {
   const CART_KEY = 'zenith_cart_v1';
@@ -90,9 +126,13 @@ if (emailForm) {
   const checkoutStatus = $('checkoutStatus');
   const checkoutSubmit = $('checkoutSubmit');
   const legalTermsText = $('legalTermsText');
+  const checkoutCode = $('checkoutCode');
+  const applyCodeBtn = $('applyCode');
+  const discountStatus = $('discountStatus');
 
   let lastFocus = null;
   let checkoutMode = null; // 'demo' | 'live' | null(unknown)
+  let appliedDiscount = null; // last validated discount summary from the server
 
   function euro(cents) {
     const v = cents / 100;
@@ -192,7 +232,53 @@ if (emailForm) {
         return `<div class="cs-row"><strong>${escapeHtml(p.title)}</strong><span>${euro(p.priceCents)}</span></div>`;
       }).join('');
     }
-    if (checkoutTotal) checkoutTotal.textContent = euro(cartTotalCents());
+    updateCheckoutTotal();
+  }
+
+  // Only ever shows a reduced total when Stripe will truly charge it (stripeApplied).
+  // A preview-only code keeps the regular total so we never promise a lower price.
+  function updateCheckoutTotal() {
+    if (!checkoutTotal) return;
+    const total = cartTotalCents();
+    if (appliedDiscount && appliedDiscount.ok && appliedDiscount.stripeApplied) {
+      checkoutTotal.innerHTML = `<span class="was">${euro(total)}</span>${euro(appliedDiscount.newTotalCents)}`;
+    } else {
+      checkoutTotal.textContent = euro(total);
+    }
+  }
+
+  function setDiscountStatus(text, kind) {
+    if (!discountStatus) return;
+    discountStatus.className = 'discount-status' + (kind ? ' ' + kind : '');
+    discountStatus.textContent = text;
+  }
+
+  async function applyDiscount() {
+    if (!checkoutCode) return;
+    const code = checkoutCode.value.trim();
+    if (!code) { appliedDiscount = null; setDiscountStatus('', null); updateCheckoutTotal(); return; }
+    const ids = getCart();
+    if (!ids.length) { setDiscountStatus('Dein Warenkorb ist leer.', 'error'); return; }
+    if (applyCodeBtn) applyCodeBtn.disabled = true;
+    setDiscountStatus('Code wird geprüft …', null);
+    let data = null;
+    try {
+      const res = await fetch('/api/discount/validate', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: ids, code })
+      });
+      data = await res.json().catch(() => null);
+    } catch (e) { data = null; }
+    if (applyCodeBtn) applyCodeBtn.disabled = false;
+    if (!data) { appliedDiscount = null; updateCheckoutTotal(); setDiscountStatus('Code konnte gerade nicht geprüft werden. Du kannst trotzdem fortfahren.', 'info'); return; }
+    if (!data.ok) { appliedDiscount = null; updateCheckoutTotal(); setDiscountStatus(data.message || 'Dieser Code ist ungültig.', 'error'); return; }
+    appliedDiscount = data;
+    updateCheckoutTotal();
+    if (data.stripeApplied) {
+      setDiscountStatus(`Code ${data.code} aktiv: −${data.discountLabel}. Neuer Gesamtbetrag ${data.newTotalLabel} — genau so berechnet Stripe.`, 'ok');
+    } else {
+      setDiscountStatus(`Code ${data.code} vorgemerkt${data.campaignName ? ' (' + data.campaignName + ')' : ''}. Der Rabatt von ${data.discountLabel} ist noch nicht bei Stripe aktiviert — aktuell wird der reguläre Preis berechnet. Sobald der Code hinterlegt ist, greift er automatisch.`, 'info');
+    }
   }
 
   function setStatus(text, kind) {
@@ -215,6 +301,9 @@ if (emailForm) {
     if (!checkoutModal) return;
     if (!getCart().length) { openCart(); return; }
     lastFocus = document.activeElement;
+    appliedDiscount = null;
+    if (checkoutCode) checkoutCode.value = '';
+    setDiscountStatus('', null);
     renderCheckoutSummary();
     setStatus('', null);
     checkoutModal.hidden = false;
@@ -264,10 +353,11 @@ if (emailForm) {
     if (checkoutSubmit) { checkoutSubmit.disabled = true; checkoutSubmit.textContent = 'Einen Moment …'; }
     let data = null;
     try {
+      const code = checkoutCode ? checkoutCode.value.trim() : '';
       const res = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items: ids, email })
+        body: JSON.stringify({ items: ids, email, code })
       });
       data = await res.json().catch(() => null);
       if (res.ok && data && data.mode === 'live' && data.url) {
@@ -294,6 +384,8 @@ if (emailForm) {
   if (cartClearBtn) cartClearBtn.addEventListener('click', clearCart);
   if (cartCheckoutBtn) cartCheckoutBtn.addEventListener('click', () => { closeCart(); openCheckout(); });
   if (checkoutForm) checkoutForm.addEventListener('submit', submitCheckout);
+  if (applyCodeBtn) applyCodeBtn.addEventListener('click', applyDiscount);
+  if (checkoutCode) checkoutCode.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); applyDiscount(); } });
 
   document.addEventListener('click', (e) => {
     const t = e.target;
@@ -319,4 +411,47 @@ if (emailForm) {
       if (location.hash === '#checkout') { openCheckout(); }
     })
     .catch(() => { if (cartButton) cartButton.hidden = true; });
+})();
+
+
+/* ===================== Language switcher (DE/EN) ===================== */
+(function languageSwitcher() {
+  const KEY = 'zenith_lang_v1';
+  const $ = (sel) => document.querySelector(sel);
+  const all = (sel) => Array.from(document.querySelectorAll(sel));
+  const translations = {
+    de: { nav: ['Pakete','Mini-Pläne','Ablauf','Kontakt','Konto','Plan ansehen'], h1:'Dein Gym-Plan, den du wirklich durchziehst.', lead:'Klare Übungen, einfache Ernährung und ein Plan, der in deinen Alltag passt. Kein Rätselraten mehr, was du heute im Gym machen sollst.', cta1:'Plan ansehen', cta2:'TikTok ansehen', note:'Pläne ab €9 · faire Launch-Preise', chips:['Trainingsplan','Ernährung','Wochenstruktur','Cardio'], packagesEyebrow:'Coaching-Pakete', packagesTitle:'Wähle deinen Plan.', packagesText:'Faire Launch-Preise zum Start. Du zahlst wenig, bekommst aber einen klaren, umsetzbaren Plan. Die Buttons legen deine Auswahl direkt in den Warenkorb; der Checkout leitet zur sicheren Stripe-Zahlung weiter.', flowEyebrow:"So läuft's ab", flowTitle:'Kein Hype. Nur ein Plan, den du umsetzt.', flowText:'Du musst nichts recherchieren und nichts zusammenbasteln. Du holst dir den Plan und arbeitest ihn ab.', contactTitle:'Schreib mir.', contactText:'Du hast eine Frage zum Plan oder weißt nicht, welches Paket zu dir passt? Melde dich einfach — am schnellsten per E-Mail.', finalTitle:'Hör auf zu sammeln. Hol dir einen Plan und zieh ihn durch.', finalBtn:'Beliebten Plan in den Warenkorb', footerLegal:'Rechtliches & Kontakt', cart:'Warenkorb' },
+    en: { nav: ['Packages','Mini plans','How it works','Contact','Account','View plans'], h1:'A gym plan you will actually follow.', lead:'Clear workouts, simple nutrition and a weekly structure that fits your life. No more guessing what to train today.', cta1:'View plans', cta2:'Watch TikTok', note:'Plans from €9 · fair launch prices', chips:['Training plan','Nutrition','Weekly structure','Cardio'], packagesEyebrow:'Coaching packages', packagesTitle:'Choose your plan.', packagesText:'Fair launch prices. You get a clear, actionable plan without overpaying. Buttons add your choice to the cart; checkout redirects to secure Stripe payment.', flowEyebrow:'How it works', flowTitle:'No hype. Just a plan you execute.', flowText:'No research, no guessing, no building your own routine. Get the plan and follow it.', contactTitle:'Message me.', contactText:'Have a question or not sure which package fits? Reach out — email is fastest.', finalTitle:'Stop collecting tips. Get a plan and follow it.', finalBtn:'Add popular plan to cart', footerLegal:'Legal & contact', cart:'Cart' }
+  };
+  const packageText = {
+    de: [['Für den Einstieg','Starter Gym Plan','Ein kurzer Trainingsplan, mit dem du direkt loslegen kannst — ohne dich zu verzetteln.','In den Warenkorb'],['Training + Essen','Gym + Ernährung','Der Trainingsplan plus eine einfache Essensstruktur, damit du nicht nach einer Woche wieder rausfällst.','In den Warenkorb'],['Alles zusammen','Komplett-Paket','Training, Ernährung, Cardio, Schlaf und eine Wochenstruktur — alles an einem Ort, damit du nichts mehr selbst zusammensuchen musst.','In den Warenkorb']],
+    en: [['Start here','Starter Gym Plan','A short training plan you can start immediately — without getting lost.','Add to cart'],['Training + food','Gym + Nutrition','The training plan plus a simple eating structure so you do not fall off after one week.','Add to cart'],['Everything together','Complete Bundle','Training, nutrition, cardio, sleep and weekly structure — all in one place.','Add to cart']]
+  };
+  function text(sel, val) { const el = $(sel); if (el) el.textContent = val; }
+  function apply(lang) {
+    const t = translations[lang] || translations.de;
+    document.documentElement.lang = lang;
+    localStorage.setItem(KEY, lang);
+    const btn = document.getElementById('langToggle'); if (btn) btn.textContent = lang.toUpperCase();
+    all('.nav-links a').slice(0, 6).forEach((a, i) => { if (t.nav[i]) a.textContent = t.nav[i]; });
+    text('.hero h1', t.h1); text('.hero .lead', t.lead);
+    const heroBtns = all('.hero-actions a'); if (heroBtns[0]) heroBtns[0].textContent = t.cta1; if (heroBtns[1]) heroBtns[1].textContent = t.cta2;
+    text('.hero-note', t.note); all('.micro-proof span').forEach((el, i) => { if (t.chips[i]) el.textContent = t.chips[i]; });
+    text('#pakete .eyebrow', t.packagesEyebrow); text('#pakete h2', t.packagesTitle); text('#pakete .section-head p', t.packagesText);
+    all('.package-card').forEach((card, i) => { const p = packageText[lang][i]; if (!p) return; const label = card.querySelector('.package-label'); const h = card.querySelector('h3'); const desc = card.querySelector('p'); const b = card.querySelector('button'); if (label) label.textContent = p[0]; if (h) h.textContent = p[1]; if (desc) desc.textContent = p[2]; if (b) b.textContent = p[3]; });
+    text('#ablauf .eyebrow', t.flowEyebrow); text('#ablauf h2', t.flowTitle); text('#ablauf .section-head p', t.flowText);
+    text('#kontakt h2', t.contactTitle); text('#kontakt .contact-intro p', t.contactText);
+    text('.final-cta h2', t.finalTitle); const finalBtn = document.querySelector('.final-cta .add-to-cart'); if (finalBtn) finalBtn.textContent = t.finalBtn;
+    text('.footer-legal strong', t.footerLegal); const cartLabel = document.querySelector('.cart-label'); if (cartLabel) cartLabel.textContent = t.cart;
+  }
+  window.zenithSetLanguage = apply;
+  document.addEventListener('DOMContentLoaded', () => {
+    const saved = localStorage.getItem(KEY);
+    const modal = document.getElementById('languageModal');
+    apply(saved || 'de');
+    if (!saved && modal) modal.hidden = false;
+    const toggle = document.getElementById('langToggle');
+    if (toggle) toggle.addEventListener('click', () => apply((localStorage.getItem(KEY) || 'de') === 'de' ? 'en' : 'de'));
+    document.querySelectorAll('[data-lang-choice]').forEach(btn => btn.addEventListener('click', () => { apply(btn.getAttribute('data-lang-choice') || 'de'); if (modal) modal.hidden = true; }));
+  });
 })();
