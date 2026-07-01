@@ -33,7 +33,13 @@ const PORT = Number(process.env.PORT) || 5097;
   } catch (e) { /* ignore */ }
 })();
 
-const SITE = (process.env.PUBLIC_SITE_URL || `http://127.0.0.1:${PORT}`).replace(/\/$/, '');
+function defaultSiteUrl() {
+  if (process.env.RENDER_EXTERNAL_HOSTNAME) return `https://${process.env.RENDER_EXTERNAL_HOSTNAME}`;
+  if (process.env.RENDER_SERVICE_NAME) return `https://${process.env.RENDER_SERVICE_NAME}.onrender.com`;
+  return `http://127.0.0.1:${PORT}`;
+}
+
+const SITE = (process.env.PUBLIC_SITE_URL || defaultSiteUrl()).replace(/\/$/, '');
 const SECURE = SITE.startsWith('https://');
 
 const MIME = {
