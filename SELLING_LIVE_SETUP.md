@@ -25,6 +25,9 @@ SESSION_SECRET=<langer Zufallswert>      # node -e "console.log(require('crypto'
 STRIPE_SECRET_KEY=<live secret key from Stripe Dashboard>
 STRIPE_WEBHOOK_SECRET=<Stripe webhook signing secret>
 STRIPE_PRICE_...=price_...                # alle 8, siehe CHECKOUT_SETUP.md
+STRIPE_COUPON_LAUNCH20=coupon_...         # optional: echte Stripe-Coupons für die Rabattcodes
+STRIPE_COUPON_RESET15=coupon_...          # (siehe data/discount-codes.json + Abschnitt 3b)
+STRIPE_COUPON_FRIEND10=coupon_...
 GOOGLE_CLIENT_ID=...
 GOOGLE_CLIENT_SECRET=...
 DEV_AUTH=0
@@ -47,6 +50,28 @@ Der Webhook ist die zuverlässige Quelle der Freischaltung (auch wenn der Käufe
 nie öffnet): `checkout.session.completed` → `store.fulfillSession(...)`. Ohne `STRIPE_WEBHOOK_SECRET`
 ist die Route deaktiviert (kein Crash, HTTP 400); dann erfolgt die Freischaltung über
 `/api/checkout/complete` beim Aufruf der Success-Seite. Das Signing Secret gehört nie ins Repo.
+
+## 3b. Rabattcodes & Newsletter (Go-Live)
+
+Die Codes in `data/discount-codes.json` (LAUNCH20 20 %, RESET15 15 %, FRIEND10 10 %) sind zunächst
+**nur Vorschau/Attribution** — der Checkout berechnet den regulären Preis, bis ein echter Stripe-Coupon
+verknüpft ist. So machst du einen Code checkout-wahr:
+
+1. Stripe Dashboard (Live-Modus) → Produktkatalog → **Coupons** → Coupon anlegen (z. B. 20 % off für
+   LAUNCH20, 15 % für RESET15, 10 % für FRIEND10). Der Prozentsatz **muss** dem `percentOff` in
+   `data/discount-codes.json` entsprechen.
+2. Coupon-ID (`coupon_…`) als Env-Variable setzen (`STRIPE_COUPON_LAUNCH20` / `_RESET15` / `_FRIEND10`)
+   → **redeploy**.
+3. **Testkauf** mit dem Code: Der auf der Website angezeigte Betrag muss exakt dem von Stripe
+   abgebuchten entsprechen. Erst danach den Code öffentlich bewerben.
+
+Ohne verknüpften Coupon niemals einen reduzierten Endbetrag versprechen — die Seite tut das auch nicht
+von selbst (sie zeigt `stripeApplied: false` und hält den regulären Preis).
+
+**Newsletter:** `POST /api/newsletter` speichert Anmeldungen dedupliziert im JSON-Store
+(`db.json` → `newsletter[]`). Dafür gilt dieselbe Persistenz-Anforderung wie in Abschnitt 1
+(Render-Disk / `ZENITH_DATA_DIR`) — sonst gehen Anmeldungen **und** eingelöste Codes bei jedem
+Deploy verloren.
 
 ## 4. Google OAuth (optional)
 
@@ -97,10 +122,20 @@ Die Seiten sind angelegt und im Footer/Checkout verlinkt:
 - **Widerrufsbelehrung** → `widerruf.html` (inkl. Erlöschen des Widerrufsrechts bei digitalen Inhalten
   nach ausdrücklicher Zustimmung + Muster-Widerrufsformular)
 
-**Noch zu tun (Pflicht vor Verkaufsstart):** In diesen vier Dateien alle als
-`BITTE ERGÄNZEN` markierten Felder mit echten Daten füllen — insbesondere vollständiger Name,
-Anschrift, und Steuerstatus (USt-IdNr. **oder** Kleinunternehmer-Hinweis nach § 19 UStG). Es wurden
-bewusst **keine erfundenen Angaben** eingesetzt. Dies ist keine Rechtsberatung.
+**Noch zu tun (Pflicht vor Verkaufsstart):** Die Rechtsseiten enthalten keine Platzhalter-Marker
+mehr, sondern an den betroffenen Stellen Erklärsätze bzw. bewusst unvollständige Anbieter-Blöcke
+(derzeit nur Vorname + E-Mail). Vor Verkaufsstart muss der Betreiber dort seinen vollständigen
+Namen und eine ladungsfähige Anschrift eintragen:
+
+- `impressum.html`: Anbieter-Block unter „Angaben gemäß § 5 DDG" (dabei den Erklärsatz zur
+  nachgereichten Anschrift ersetzen) und Block „Verantwortlich für den Inhalt nach
+  § 18 Abs. 2 MStV". Außerdem den Abschnitt „Umsatzsteuer" an den eigenen Steuerstatus anpassen
+  (USt-IdNr. **oder** Kleinunternehmer-Hinweis nach § 19 UStG).
+- `datenschutz.html`: Abschnitt „1. Verantwortlicher".
+- `agb.html`: Anbieter-Block in „§ 1 Geltungsbereich und Anbieter".
+- `widerruf.html`: Adressblock unter „Widerrufsrecht" (Empfänger der Widerrufserklärung).
+
+Es wurden bewusst **keine erfundenen Angaben** eingesetzt. Dies ist keine Rechtsberatung.
 
 Im Checkout muss der Käufer vor „Sicher bezahlen" aktiv bestätigen: AGB akzeptiert, Datenschutz zur
 Kenntnis genommen, Widerrufsbelehrung gelesen, und (digitale Inhalte) ausdrückliche Zustimmung zur

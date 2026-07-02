@@ -81,8 +81,10 @@ Umsetzung:
 - Store-Schreibzugriffe bleiben atomar (temp→rename) und serialisiert (Mutex).
 - `server/private/*` und `data/discount-codes.json` sind nicht öffentlich; bestehende
   Käufer-Zugänge (signierte v2-Delivery-Tokens) und Plan-Protection unverändert.
-- Getestet: 20 Unit-Checks (Rabatt-Mathe, Dedupe, Idempotenz) + 24 HTTP-Integrationschecks
-  (Endpunkte, Demo-Modus, 403-Blocks) — alle grün, ohne echte Zahlung.
+- Getestet in der Umsetzungs-Session mit Ad-hoc-Skripten (Rabatt-Mathe, Dedupe, Idempotenz;
+  HTTP-Checks für Endpunkte, Demo-Modus und 403-Blocks inkl. Path-Bypass-Versuchen) — alle grün,
+  ohne echte Zahlung. Die Skripte liegen aktuell nicht im Repo (kein `npm test`); ein nächster
+  Schritt ist, sie als committete Suite (`tools/checks/*.test.mjs`, `node --test`) zu hinterlegen.
 
 ---
 

@@ -72,8 +72,11 @@ Live-Domain dieses Projekts: **https://zenith-gym-coaching-site.onrender.com**
    - Redirect URI: `https://zenith-gym-coaching-site.onrender.com/auth/google/callback`
    - Google-Login ist **optional** (nur Konto-Komfort). Käufe funktionieren ohne Login über den
      persönlichen Zugangslink nach der Zahlung.
-6. Rechtliches finalisieren: In `impressum.html`, `datenschutz.html`, `agb.html`, `widerruf.html` die
-   als „BITTE ERGÄNZEN" markierten Pflichtfelder (Name, Anschrift, Steuerstatus) mit echten Daten füllen.
+6. Rechtliches finalisieren: vollständigen Namen + ladungsfähige Anschrift des Betreibers eintragen in
+   `impressum.html` (Anbieter-Block „Angaben gemäß § 5 DDG" und Block „§ 18 Abs. 2 MStV"; dazu Abschnitt
+   „Umsatzsteuer" an den eigenen Steuerstatus anpassen), `datenschutz.html` (Abschnitt „1. Verantwortlicher"),
+   `agb.html` (Anbieter-Block in § 1) und `widerruf.html` (Adressblock unter „Widerrufsrecht").
+   Details: `SELLING_LIVE_SETUP.md`, Abschnitt 6.
 
 ## Stripe Webhook (Schritt für Schritt)
 

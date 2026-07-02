@@ -1,208 +1,216 @@
 {
-  "currency": "eur",
-  "note": "Zentrale Produktdaten. Preise hier sind die einzige Quelle der Wahrheit (Website, Warenkorb, Checkout-Server lesen daraus).",
-  "products": [
-    {
-      "id": "starter-plan",
-      "slug": "starter-gym-plan",
-      "title": "Starter Gym Plan",
-      "type": "package",
-      "priceCents": 900,
-      "priceLabel": "€9",
-      "description": "Ein kurzer Trainingsplan für den Einstieg: Übungen, Sätze, Wiederholungen und eine einfache Steigerungsregel.",
-      "bullets": [
-        "Trainingsplan für den Einstieg",
-        "Übungen, Sätze, Wiederholungen",
-        "Wann du steigern solltest",
-        "Typische Anfänger-Fehler vermeiden"
-      ],
-      "deliverablePaths": [
-        "products/plans/starter-gym-plan.html",
-        "products/plans/starter-gym-plan.md"
-      ],
-      "stripePriceEnvKey": "STRIPE_PRICE_STARTER_GYM_PLAN",
-      "stripePriceIdPlaceholder": "price_REPLACE_starter_gym_plan",
-      "tags": [
-        "training",
-        "einstieg"
-      ],
-      "stripePriceId": "price_1To7bl48MRa2tbyIKWKtGFGc"
-    },
-    {
-      "id": "gym-food",
-      "slug": "gym-ernaehrung",
-      "title": "Gym + Ernährung",
-      "type": "package",
-      "priceCents": 1900,
-      "priceLabel": "€19",
-      "description": "Der Trainingsplan plus eine einfache Essensstruktur, damit du nicht nach einer Woche wieder rausfällst.",
-      "bullets": [
-        "Alles aus dem Starter Gym Plan",
-        "Einfache Essensstruktur für den Alltag",
-        "Einkaufslogik: was wirklich in den Korb",
-        "Protein und Portionen ohne Kalorien-Stress"
-      ],
-      "deliverablePaths": [
-        "products/plans/gym-ernaehrung.html",
-        "products/plans/gym-ernaehrung.md"
-      ],
-      "stripePriceEnvKey": "STRIPE_PRICE_GYM_ERNAEHRUNG",
-      "stripePriceIdPlaceholder": "price_REPLACE_gym_ernaehrung",
-      "tags": [
-        "training",
-        "ernährung"
-      ],
-      "stripePriceId": "price_1To7bm48MRa2tbyIXpy1qSvB"
-    },
-    {
-      "id": "komplett",
-      "slug": "komplett-paket",
-      "title": "Komplett-Paket",
-      "type": "package",
-      "priceCents": 3900,
-      "priceLabel": "€39",
-      "description": "Training, Ernährung, Cardio, Schlaf und eine Wochenstruktur — alles an einem Ort.",
-      "bullets": [
-        "Alles aus den Plänen 1 und 2",
-        "Cardio sinnvoll einbauen",
-        "Schlaf und Erholung",
-        "Supplement-Basics: was sinnvoll ist",
-        "Feste Wochenstruktur"
-      ],
-      "deliverablePaths": [
-        "products/plans/komplett-paket.html",
-        "products/plans/komplett-paket.md"
-      ],
-      "stripePriceEnvKey": "STRIPE_PRICE_KOMPLETT_PAKET",
-      "stripePriceIdPlaceholder": "price_REPLACE_komplett_paket",
-      "tags": [
-        "training",
-        "ernährung",
-        "cardio",
-        "erholung"
-      ],
-      "stripePriceId": "price_1To7bm48MRa2tbyIWLSWi4tH"
-    },
-    {
-      "id": "meal-plan",
-      "slug": "mini-essensplan",
-      "title": "Essensplan",
-      "type": "addon",
-      "priceCents": 500,
-      "priceLabel": "€5",
-      "description": "Drei einfache Tagesstrukturen, die du sofort nachmachen kannst.",
-      "bullets": [
-        "3 einfache Tagesstrukturen",
-        "Teller-Methode",
-        "Einkaufsliste"
-      ],
-      "deliverablePaths": [
-        "products/plans/mini-essensplan.html",
-        "products/plans/mini-essensplan.md"
-      ],
-      "stripePriceEnvKey": "STRIPE_PRICE_MINI_ESSENSPLAN",
-      "stripePriceIdPlaceholder": "price_REPLACE_mini_essensplan",
-      "tags": [
-        "ernährung"
-      ],
-      "stripePriceId": "price_1To7bn48MRa2tbyI8Wf6EzNU"
-    },
-    {
-      "id": "supplement-plan",
-      "slug": "mini-supplement-guide",
-      "title": "Supplement-Guide",
-      "type": "addon",
-      "priceCents": 400,
-      "priceLabel": "€4",
-      "description": "Was Sinn macht — und was nicht. Ehrlich, ohne Verkaufsmasche.",
-      "bullets": [
-        "Sinnvoll vs. unnötig",
-        "Ehrliche Einordnung",
-        "Kein Marken-Verkauf"
-      ],
-      "deliverablePaths": [
-        "products/plans/mini-supplement-guide.html",
-        "products/plans/mini-supplement-guide.md"
-      ],
-      "stripePriceEnvKey": "STRIPE_PRICE_MINI_SUPPLEMENT_GUIDE",
-      "stripePriceIdPlaceholder": "price_REPLACE_mini_supplement_guide",
-      "tags": [
-        "supplements"
-      ],
-      "stripePriceId": "price_1To7bo48MRa2tbyIEtcML4gb"
-    },
-    {
-      "id": "cardio-plan",
-      "slug": "mini-cardio-plan",
-      "title": "Cardio Plan",
-      "type": "addon",
-      "priceCents": 400,
-      "priceLabel": "€4",
-      "description": "Cardio mit Plan statt planlosem Rennen — einfach in die Woche eingebaut.",
-      "bullets": [
-        "LISS vs. Intervalle",
-        "Konkrete Einheiten",
-        "Neben dem Training"
-      ],
-      "deliverablePaths": [
-        "products/plans/mini-cardio-plan.html",
-        "products/plans/mini-cardio-plan.md"
-      ],
-      "stripePriceEnvKey": "STRIPE_PRICE_MINI_CARDIO_PLAN",
-      "stripePriceIdPlaceholder": "price_REPLACE_mini_cardio_plan",
-      "tags": [
-        "cardio"
-      ],
-      "stripePriceId": "price_1To7bp48MRa2tbyINGzjB1iE"
-    },
-    {
-      "id": "sleep-plan",
-      "slug": "mini-schlaf-erholung",
-      "title": "Schlaf & Erholung",
-      "type": "addon",
-      "priceCents": 400,
-      "priceLabel": "€4",
-      "description": "Besser regenerieren: einfache Routinen für Schlaf und Erholung.",
-      "bullets": [
-        "Schlafhygiene-Checkliste",
-        "Einfache Abendroutine",
-        "Ruhetage & Deload"
-      ],
-      "deliverablePaths": [
-        "products/plans/mini-schlaf-erholung.html",
-        "products/plans/mini-schlaf-erholung.md"
-      ],
-      "stripePriceEnvKey": "STRIPE_PRICE_MINI_SCHLAF_ERHOLUNG",
-      "stripePriceIdPlaceholder": "price_REPLACE_mini_schlaf_erholung",
-      "tags": [
-        "erholung",
-        "schlaf"
-      ],
-      "stripePriceId": "price_1To7bq48MRa2tbyIFnf8B761"
-    },
-    {
-      "id": "form-checklist",
-      "slug": "mini-technik-checkliste",
-      "title": "Technik-Checkliste",
-      "type": "addon",
-      "priceCents": 300,
-      "priceLabel": "€3",
-      "description": "Saubere Ausführung im Gym: kurze Technik-Cues für die Grundübungen.",
-      "bullets": [
-        "Cues für Grundübungen",
-        "Stopp-Signale",
-        "Sofort nutzbar"
-      ],
-      "deliverablePaths": [
-        "products/plans/mini-technik-checkliste.html",
-        "products/plans/mini-technik-checkliste.md"
-      ],
-      "stripePriceEnvKey": "STRIPE_PRICE_MINI_TECHNIK_CHECKLISTE",
-      "stripePriceIdPlaceholder": "price_REPLACE_mini_technik_checkliste",
-      "tags": [
-        "technik"
-      ],
-      "stripePriceId": "price_1To7br48MRa2tbyIpVx2VXKx"
-    }
-  ]
+    "currency":  "eur",
+    "note":  "Zentrale Produktdaten. Preise hier sind die einzige Quelle der Wahrheit (Website, Warenkorb, Checkout-Server lesen daraus).",
+    "products":  [
+                     {
+                         "id":  "starter-plan",
+                         "slug":  "starter-gym-plan",
+                         "title":  "Starter Gym Plan",
+                         "type":  "package",
+                         "priceCents":  900,
+                         "priceLabel":  "€9",
+                         "description":  "Ein kurzer Trainingsplan für den Einstieg: Übungen, Sätze, Wiederholungen und eine einfache Steigerungsregel.",
+                         "bullets":  [
+                                         "Trainingsplan für den Einstieg",
+                                         "Übungen, Sätze, Wiederholungen",
+                                         "Wann du steigern solltest",
+                                         "Typische Anfänger-Fehler vermeiden"
+                                     ],
+                         "deliverablePaths":  [
+                                                  "server/private/plans/starter-gym-plan.html",
+                                                  "server/private/plans/starter-gym-plan.md"
+                                              ],
+                         "stripePriceEnvKey":  "STRIPE_PRICE_STARTER_GYM_PLAN",
+                         "stripePriceIdPlaceholder":  "price_REPLACE_starter_gym_plan",
+                         "tags":  [
+                                      "training",
+                                      "einstieg"
+                                  ],
+                         "stripePriceId":  "price_1To7bl48MRa2tbyIKWKtGFGc",
+                         "titleEn":  "Starter Gym Plan"
+                     },
+                     {
+                         "id":  "gym-food",
+                         "slug":  "gym-ernaehrung",
+                         "title":  "Gym + Ernährung",
+                         "type":  "package",
+                         "priceCents":  1900,
+                         "priceLabel":  "€19",
+                         "description":  "Der Trainingsplan plus eine einfache Essensstruktur, damit du nicht nach einer Woche wieder rausfällst.",
+                         "bullets":  [
+                                         "Alles aus dem Starter Gym Plan",
+                                         "Einfache Essensstruktur für den Alltag",
+                                         "Einkaufslogik: was wirklich in den Korb",
+                                         "Protein und Portionen ohne Kalorien-Stress"
+                                     ],
+                         "deliverablePaths":  [
+                                                  "server/private/plans/gym-ernaehrung.html",
+                                                  "server/private/plans/gym-ernaehrung.md"
+                                              ],
+                         "stripePriceEnvKey":  "STRIPE_PRICE_GYM_ERNAEHRUNG",
+                         "stripePriceIdPlaceholder":  "price_REPLACE_gym_ernaehrung",
+                         "tags":  [
+                                      "training",
+                                      "ernährung"
+                                  ],
+                         "stripePriceId":  "price_1To7bm48MRa2tbyIXpy1qSvB",
+                         "titleEn":  "Gym + Nutrition"
+                     },
+                     {
+                         "id":  "komplett",
+                         "slug":  "komplett-paket",
+                         "title":  "Komplett-Paket",
+                         "type":  "package",
+                         "priceCents":  3900,
+                         "priceLabel":  "€39",
+                         "description":  "Training, Ernährung, Cardio, Schlaf und eine Wochenstruktur — alles an einem Ort.",
+                         "bullets":  [
+                                         "Alles aus den Plänen 1 und 2",
+                                         "Cardio sinnvoll einbauen",
+                                         "Schlaf und Erholung",
+                                         "Supplement-Basics: was sinnvoll ist",
+                                         "Feste Wochenstruktur"
+                                     ],
+                         "deliverablePaths":  [
+                                                  "server/private/plans/komplett-paket.html",
+                                                  "server/private/plans/komplett-paket.md"
+                                              ],
+                         "stripePriceEnvKey":  "STRIPE_PRICE_KOMPLETT_PAKET",
+                         "stripePriceIdPlaceholder":  "price_REPLACE_komplett_paket",
+                         "tags":  [
+                                      "training",
+                                      "ernährung",
+                                      "cardio",
+                                      "erholung"
+                                  ],
+                         "stripePriceId":  "price_1To7bm48MRa2tbyIWLSWi4tH",
+                         "titleEn":  "Complete Bundle"
+                     },
+                     {
+                         "id":  "meal-plan",
+                         "slug":  "mini-essensplan",
+                         "title":  "Essensplan",
+                         "type":  "addon",
+                         "priceCents":  500,
+                         "priceLabel":  "€5",
+                         "description":  "Drei einfache Tagesstrukturen, die du sofort nachmachen kannst.",
+                         "bullets":  [
+                                         "3 einfache Tagesstrukturen",
+                                         "Teller-Methode",
+                                         "Einkaufsliste"
+                                     ],
+                         "deliverablePaths":  [
+                                                  "server/private/plans/mini-essensplan.html",
+                                                  "server/private/plans/mini-essensplan.md"
+                                              ],
+                         "stripePriceEnvKey":  "STRIPE_PRICE_MINI_ESSENSPLAN",
+                         "stripePriceIdPlaceholder":  "price_REPLACE_mini_essensplan",
+                         "tags":  [
+                                      "ernährung"
+                                  ],
+                         "stripePriceId":  "price_1To7bn48MRa2tbyI8Wf6EzNU",
+                         "titleEn":  "Meal Plan"
+                     },
+                     {
+                         "id":  "supplement-plan",
+                         "slug":  "mini-supplement-guide",
+                         "title":  "Supplement-Guide",
+                         "type":  "addon",
+                         "priceCents":  400,
+                         "priceLabel":  "€4",
+                         "description":  "Was Sinn macht — und was nicht. Ehrlich, ohne Verkaufsmasche.",
+                         "bullets":  [
+                                         "Sinnvoll vs. unnötig",
+                                         "Ehrliche Einordnung",
+                                         "Kein Marken-Verkauf"
+                                     ],
+                         "deliverablePaths":  [
+                                                  "server/private/plans/mini-supplement-guide.html",
+                                                  "server/private/plans/mini-supplement-guide.md"
+                                              ],
+                         "stripePriceEnvKey":  "STRIPE_PRICE_MINI_SUPPLEMENT_GUIDE",
+                         "stripePriceIdPlaceholder":  "price_REPLACE_mini_supplement_guide",
+                         "tags":  [
+                                      "supplements"
+                                  ],
+                         "stripePriceId":  "price_1To7bo48MRa2tbyIEtcML4gb",
+                         "titleEn":  "Supplement Guide"
+                     },
+                     {
+                         "id":  "cardio-plan",
+                         "slug":  "mini-cardio-plan",
+                         "title":  "Cardio Plan",
+                         "type":  "addon",
+                         "priceCents":  400,
+                         "priceLabel":  "€4",
+                         "description":  "Cardio mit Plan statt planlosem Rennen — einfach in die Woche eingebaut.",
+                         "bullets":  [
+                                         "LISS vs. Intervalle",
+                                         "Konkrete Einheiten",
+                                         "Neben dem Training"
+                                     ],
+                         "deliverablePaths":  [
+                                                  "server/private/plans/mini-cardio-plan.html",
+                                                  "server/private/plans/mini-cardio-plan.md"
+                                              ],
+                         "stripePriceEnvKey":  "STRIPE_PRICE_MINI_CARDIO_PLAN",
+                         "stripePriceIdPlaceholder":  "price_REPLACE_mini_cardio_plan",
+                         "tags":  [
+                                      "cardio"
+                                  ],
+                         "stripePriceId":  "price_1To7bp48MRa2tbyINGzjB1iE",
+                         "titleEn":  "Cardio Plan"
+                     },
+                     {
+                         "id":  "sleep-plan",
+                         "slug":  "mini-schlaf-erholung",
+                         "title":  "Schlaf \u0026 Erholung",
+                         "type":  "addon",
+                         "priceCents":  400,
+                         "priceLabel":  "€4",
+                         "description":  "Besser regenerieren: einfache Routinen für Schlaf und Erholung.",
+                         "bullets":  [
+                                         "Schlafhygiene-Checkliste",
+                                         "Einfache Abendroutine",
+                                         "Ruhetage \u0026 Deload"
+                                     ],
+                         "deliverablePaths":  [
+                                                  "server/private/plans/mini-schlaf-erholung.html",
+                                                  "server/private/plans/mini-schlaf-erholung.md"
+                                              ],
+                         "stripePriceEnvKey":  "STRIPE_PRICE_MINI_SCHLAF_ERHOLUNG",
+                         "stripePriceIdPlaceholder":  "price_REPLACE_mini_schlaf_erholung",
+                         "tags":  [
+                                      "erholung",
+                                      "schlaf"
+                                  ],
+                         "stripePriceId":  "price_1To7bq48MRa2tbyIFnf8B761",
+                         "titleEn":  "Sleep \u0026 Recovery"
+                     },
+                     {
+                         "id":  "form-checklist",
+                         "slug":  "mini-technik-checkliste",
+                         "title":  "Technik-Checkliste",
+                         "type":  "addon",
+                         "priceCents":  300,
+                         "priceLabel":  "€3",
+                         "description":  "Saubere Ausführung im Gym: kurze Technik-Cues für die Grundübungen.",
+                         "bullets":  [
+                                         "Cues für Grundübungen",
+                                         "Stopp-Signale",
+                                         "Sofort nutzbar"
+                                     ],
+                         "deliverablePaths":  [
+                                                  "server/private/plans/mini-technik-checkliste.html",
+                                                  "server/private/plans/mini-technik-checkliste.md"
+                                              ],
+                         "stripePriceEnvKey":  "STRIPE_PRICE_MINI_TECHNIK_CHECKLISTE",
+                         "stripePriceIdPlaceholder":  "price_REPLACE_mini_technik_checkliste",
+                         "tags":  [
+                                      "technik"
+                                  ],
+                         "stripePriceId":  "price_1To7br48MRa2tbyIpVx2VXKx",
+                         "titleEn":  "Form Checklist"
+                     }
+                 ]
 }

@@ -18,6 +18,16 @@ test-results/
 # Original-/Zwischenbilder (nicht für Deployment nötig)
 assets/_original/
 
+# Videopipeline: große generierte Medien + lokale Build-Skripte
+# (bis zu 175 MB pro Datei — nie committen, GitHub-Limit 100 MB)
+assets/video/
+assets/ad-storyboard/
+scripts/
+docs/zenith-higgsfield-video-strategy.md
+
+# Lokale Hilfstools (enthalten lokale Pfade, nicht fürs öffentliche Repo)
+tools/
+
 # OS / Editor
 .DS_Store
 Thumbs.db

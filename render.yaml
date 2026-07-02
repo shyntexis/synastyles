@@ -50,3 +50,15 @@ services:
         sync: false
       - key: GOOGLE_CLIENT_SECRET
         sync: false
+      # Optionale Variablen — bei Bedarf direkt im Render-Dashboard setzen
+      # (bewusst NICHT als envVars mit sync:false gelistet, damit der Deploy
+      # nicht auf fehlende Eingaben wartet):
+      #   RESEND_API_KEY, MAIL_FROM (oder RESEND_FROM_EMAIL), MAIL_REPLY_TO
+      #     -> Kauf-Bestätigungs-E-Mail über Resend. Ohne diese Werte wird
+      #        keine Kauf-Mail versendet; die Zugangslinks funktionieren
+      #        trotzdem über die Success-Seite nach dem Bezahlen.
+      #   STRIPE_COUPON_LAUNCH20, STRIPE_COUPON_RESET15, STRIPE_COUPON_FRIEND10,
+      #   STRIPE_COUPON_CREATOR_LEA (Vorlage)
+      #     -> verknüpfen Rabattcodes aus data/discount-codes.json mit echten
+      #        Stripe-Coupons. Ohne Verknüpfung ist ein Code nur Vorschau/
+      #        Attribution und senkt den abgebuchten Betrag NICHT.

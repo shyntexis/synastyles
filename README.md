@@ -24,12 +24,14 @@ index.html / styles.css / app.js   Landingpage + Warenkorb/Checkout (Premium Bla
 account.html                       Konto-Dashboard (optionaler Google-Login, Käufe, Plan öffnen)
 checkout-success.html / -cancel.html  Stripe Erfolg/Abbruch
 data/products.json                 Produktdaten (Preise = einzige Quelle der Wahrheit)
+data/discount-codes.json           Rabatt-/Affiliate-Codes (NICHT öffentlich — Server sperrt den Pfad mit 403)
 data/video-workflow.json           Video-Pipeline-Daten
 products/plans/plan.css            Öffentliches Stylesheet der Plan-Seiten
 server/checkout-server.mjs         HTTP-Server: Static + alle APIs + /access-Auslieferung
 server/auth.mjs                    Session-Cookies, signierte Access-/Delivery-Tokens (v1+v2), OAuth-State
-server/store.mjs                   JSON-Store (users/entitlements) — atomar, never-crash
-server/stripe.mjs                  Stripe REST (Checkout-Session, Webhook-Verify)
+server/store.mjs                   JSON-Store (users/entitlements/newsletter/redemptions) — atomar, never-crash
+server/discounts.mjs               Rabattcode-Logik (/api/discount/validate + Checkout-Integration)
+server/stripe.mjs                  Stripe REST (Checkout-Session, Coupons, Webhook-Verify)
 server/private/plans/*.html|*.md   VOLLE Käuferinhalte (NICHT öffentlich ausgeliefert)
 server/private/db.json             Käuferdaten (gitignored, nie öffentlich)
 .env.example                       Vorlage für alle Secrets/Keys (kopieren zu .env)
@@ -73,6 +75,21 @@ VIDEO_WORKFLOW.md                  KI-Coaching-Video-Produktion (Leitfaden)
 ## Preise
 
 Starter €9 · Gym + Ernährung €19 · Komplett-Paket €39 · Mini-Pläne €5/€4/€4/€4/€3.
+
+## Newsletter & Rabattcodes
+
+- **Newsletter:** `POST /api/newsletter` speichert Anmeldungen dedupliziert (normalisierte
+  E-Mail, Zeitstempel) im JSON-Store (`db.json` → `newsletter[]`). Kein externer Mail-Provider
+  nötig; Formular + Statusmeldungen auf der Landingpage.
+- **Rabatt-/Affiliate-Codes:** in `data/discount-codes.json` (aktiv: LAUNCH20 20 %, RESET15 15 %,
+  FRIEND10 10 %; CREATOR-LEA als inaktive Affiliate-Vorlage). Validierung server-seitig über
+  `POST /api/discount/validate`.
+- **Checkout-Wahrheit:** Ein Code senkt den bei Stripe **tatsächlich** berechneten Betrag erst,
+  wenn im Stripe-Dashboard ein Coupon angelegt und dessen ID als Env-Variable
+  (`STRIPE_COUPON_LAUNCH20` / `_RESET15` / `_FRIEND10`) verknüpft ist. Ohne Verknüpfung ist der
+  Code nur Vorschau/Attribution — die Seite zeigt dann den regulären Preis und behauptet keinen
+  Abzug. **Ablauf:** Coupon anlegen → Env setzen → Testkauf → erst dann bewerben.
+  Details in [docs/backend-growth-audit.md](docs/backend-growth-audit.md).
 
 ## SEO
 

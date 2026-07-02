@@ -2,15 +2,5 @@
   "brandName": "ZENITH",
   "tiktokHandle": "@tristymindagym",
   "tiktokUrl": "https://www.tiktok.com/@tristymindagym",
-  "contactEmail": "synastyles@gmail.com",
-  "checkoutLinks": {
-    "starter-plan": "#checkout-starter-plan",
-    "gym-food": "#checkout-gym-food",
-    "komplett": "#checkout-komplett",
-    "meal-plan": "#checkout-meal-plan",
-    "supplement-plan": "#checkout-supplement-plan",
-    "cardio-plan": "#checkout-cardio-plan",
-    "sleep-plan": "#checkout-sleep-plan",
-    "form-checklist": "#checkout-form-checklist"
-  }
+  "contactEmail": "synastyles@gmail.com"
 }

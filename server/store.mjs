@@ -121,6 +121,9 @@ export async function fulfillSession(sessionId, email, productIds) {
 
 // ---- Newsletter subscribers (JSON store, deduped by normalized email) ----
 // Simple double-opt-in-ready list. No external mail provider required.
+// Hard cap: protects the JSON store (and the small persistent disk) from
+// unbounded growth through automated signups.
+const NEWSLETTER_MAX = 20000;
 export async function addNewsletterSubscriber({ email, source, interest } = {}) {
   const e = canon(email);
   if (!e) return { ok: false, reason: 'invalid' };
@@ -133,6 +136,7 @@ export async function addNewsletterSubscriber({ email, source, interest } = {}) 
       existing.updatedAt = nowIso();
       return { ok: true, already: true };
     }
+    if (db.newsletter.length >= NEWSLETTER_MAX) return { ok: false, reason: 'full' };
     db.newsletter.push({
       id: rid('n'),
       email: e,

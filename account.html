@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#0a0a09" />
   <title>Mein Konto — ZENITH</title>
   <meta name="robots" content="noindex" />
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -36,6 +37,7 @@
     .note{margin-top:14px;padding:13px 15px;border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:12px;background:rgba(231,190,108,.07);color:#e7e0cf;font-size:13.5px;line-height:1.55}
     .note.warn{border-left-color:#ff9d8d}
     .banner{margin-bottom:18px;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:rgba(231,190,108,.08);color:#ffe2a0;font-weight:600;font-size:14px}
+    .banner a{color:#ffe2a0}
     .dev{margin-top:18px;padding:16px;border:1px dashed rgba(231,190,108,.45);border-radius:14px;background:rgba(231,190,108,.04)}
     .dev h3{font-size:15px;margin:0 0 10px;color:#ffe2a0}
     .dev .row{display:flex;gap:8px;flex-wrap:wrap}
@@ -111,28 +113,84 @@
   </div>
 
   <script>
+    let lang;
+    try { lang = localStorage.getItem('zenith_lang_v1') === 'en' ? 'en' : 'de'; } catch (e) { lang = 'de'; }
+    document.documentElement.lang = lang;
+
+    const I18N = {
+      de: {
+        docTitle: 'Mein Konto — ZENITH',
+        errors: { state: 'Login-Sitzung abgelaufen, bitte erneut versuchen.', nocode: 'Google hat keinen Code geliefert.', token: 'Token-Austausch mit Google fehlgeschlagen.', email: 'E-Mail nicht bestätigt oder nicht freigegeben.', oauth: 'Google-Login fehlgeschlagen.' },
+        loginFailed: 'Login fehlgeschlagen.',
+        loginPrompt: 'Bitte melde dich an, um deinen gekauften Plan zu öffnen.',
+        loggedInBanner: 'Du bist angemeldet. Öffne deinen Plan über „Online ansehen“ — oder direkt hier:',
+        openPlanNow: 'Plan jetzt öffnen →',
+        myAccount: 'Mein Konto',
+        planLabel: 'Plan',
+        openOnline: 'Online ansehen',
+        downloadPdf: 'PDF herunterladen'
+      },
+      en: {
+        docTitle: 'My account — ZENITH',
+        errors: { state: 'Sign-in session expired, please try again.', nocode: 'Google did not return a code.', token: 'Token exchange with Google failed.', email: 'Email not verified or not allowed.', oauth: 'Google sign-in failed.' },
+        loginFailed: 'Sign-in failed.',
+        loginPrompt: 'Please sign in to open your purchased plan.',
+        loggedInBanner: 'You are signed in. Open your plan via “Open online” — or right here:',
+        openPlanNow: 'Open plan now →',
+        myAccount: 'My account',
+        planLabel: 'Plan',
+        openOnline: 'Open online',
+        downloadPdf: 'Download PDF'
+      }
+    };
+    const T = I18N[lang];
+
     const qs = new URLSearchParams(location.search);
     const ret = qs.get('return') || '/account.html';
     const $ = (id) => document.getElementById(id);
 
+    // Statische Texte fuer EN ersetzen — das deutsche HTML bleibt No-JS-Fallback.
+    if (lang === 'en') {
+      document.title = T.docTitle;
+      const brandEm = document.querySelector('.brand-copy em'); if (brandEm) brandEm.textContent = 'My account';
+      const homeBtn = document.querySelector('.acc-head .button.ghost'); if (homeBtn) homeBtn.textContent = 'Home';
+      const outEyebrow = document.querySelector('#viewOut .eyebrow'); if (outEyebrow) outEyebrow.textContent = 'Account';
+      const outH1 = document.querySelector('#viewOut h1'); if (outH1) outH1.textContent = 'Signing in is optional.';
+      const outLead = document.querySelector('#viewOut p.muted');
+      if (outLead) outLead.innerHTML = 'Signing in with Google is <b>optional</b> and only there for convenience, so you can open your plans together in one place later. It is <b>not</b> required for buying: after payment you get a personal access link to your plans right away.';
+      const gb = $('googleBtn'); if (gb && gb.lastChild) gb.lastChild.textContent = ' Sign in with Google';
+      const gNote = $('googleNote');
+      if (gNote) gNote.innerHTML = 'Signing in with Google is currently not set up — it is <b>optional</b>. Your purchases work anyway: after payment you receive a personal access link to your plans. <br><span class="muted" style="font-size:12.5px">Operator setup: set <code>GOOGLE_CLIENT_ID</code> and <code>GOOGLE_CLIENT_SECRET</code> in <code>.env</code> (redirect URI: <code>https://zenith-gym-coaching-site.onrender.com/auth/google/callback</code>). Guide: <code>SELLING_LIVE_SETUP.md</code>.</span>';
+      const devH3 = document.querySelector('#devLogin h3'); if (devH3) devH3.textContent = 'DEV login (local only, DEV_AUTH=1)';
+      const devBtn = $('devLoginBtn'); if (devBtn) devBtn.textContent = 'Dev login';
+      const devEmail = $('devEmail'); if (devEmail) devEmail.placeholder = 'customer@example.com';
+      const outBtn = $('logoutBtn'); if (outBtn) outBtn.textContent = 'Sign out';
+      const plansEyebrow = document.querySelector('#plansCard .eyebrow'); if (plansEyebrow) plansEyebrow.textContent = 'Your plans';
+      const plansH2 = document.querySelector('#plansCard h2'); if (plansH2) plansH2.textContent = 'Purchased plans';
+      const noProdsP = document.querySelector('#noProds p'); if (noProdsP) noProdsP.textContent = 'You do not have any plans yet. Take a look at the packages:';
+      const noProdsBtn = document.querySelector('#noProds .button'); if (noProdsBtn) noProdsBtn.textContent = 'View plans';
+      const grantH3 = document.querySelector('#devGrant h3'); if (grantH3) grantH3.textContent = 'DEV grant (local only): unlock a plan without payment';
+      const footLabels = ['Legal notice', 'Privacy policy', 'Terms', 'Cancellation policy', 'Home'];
+      document.querySelectorAll('.footer-legal-links a').forEach((a, i) => { if (footLabels[i]) a.textContent = footLabels[i]; });
+    }
+
     function showBanner(text, warn) { const b = $('banner'); b.textContent = text; b.classList.remove('hidden'); if (warn) b.style.color = '#ff9d8d'; }
-    const ERRORS = { state: 'Login-Sitzung abgelaufen, bitte erneut versuchen.', nocode: 'Google hat keinen Code geliefert.', token: 'Token-Austausch mit Google fehlgeschlagen.', email: 'E-Mail nicht bestätigt oder nicht freigegeben.', oauth: 'Google-Login fehlgeschlagen.' };
-    if (qs.get('error')) showBanner(ERRORS[qs.get('error')] || 'Login fehlgeschlagen.', true);
-    if (qs.get('login')) showBanner('Bitte melde dich an, um deinen gekauften Plan zu öffnen.');
+    if (qs.get('error')) showBanner(T.errors[qs.get('error')] || T.loginFailed, true);
+    if (qs.get('login')) showBanner(T.loginPrompt);
     if (qs.get('google') === 'unconfigured') $('googleNote') && $('googleNote').classList.remove('hidden');
 
     let products = [];
-    fetch('data/products.json').then(r => r.json()).then(j => { products = j.products || []; }).catch(() => {});
+    const productsReady = fetch('data/products.json').then(r => r.json()).then(j => { products = j.products || []; }).catch(() => {});
 
     function renderLoggedIn(me) {
       $('viewIn').classList.remove('hidden');
       $('plansCard').classList.remove('hidden');
-      $('uName').textContent = me.user.name || 'Mein Konto';
+      $('uName').textContent = me.user.name || T.myAccount;
       $('uEmail').textContent = me.user.email;
       if (me.user.picture) { const a = $('avatar'); a.innerHTML = ''; const img = document.createElement('img'); img.src = me.user.picture; img.alt = ''; img.style.cssText = 'width:100%;height:100%;border-radius:50%;object-fit:cover'; a.appendChild(img); }
       const list = $('prodList');
       if (me.products && me.products.length) {
-        list.innerHTML = me.products.map(p => `<div class="prod-row"><div class="pt"><span>Plan</span><strong>${escapeHtml(p.title)}</strong></div><div class="prod-actions"><a class="button primary" href="${p.accessPath}">Online ansehen</a>${p.downloadPath ? `<a class="button ghost" href="${p.downloadPath}">PDF herunterladen</a>` : ''}</div></div>`).join('');
+        list.innerHTML = me.products.map(p => `<div class="prod-row"><div class="pt"><span>${T.planLabel}</span><strong>${escapeHtml(p.title)}</strong></div><div class="prod-actions"><a class="button primary" href="${escapeHtml(p.accessPath)}">${T.openOnline}</a>${p.downloadPath ? `<a class="button ghost" href="${escapeHtml(p.downloadPath)}">${T.downloadPdf}</a>` : ''}</div></div>`).join('');
         $('noProds').classList.add('hidden');
       } else {
         list.innerHTML = '';
@@ -140,14 +198,25 @@
       }
       if (me.devAuth) {
         $('devGrant').classList.remove('hidden');
-        $('devGrantRow').innerHTML = products.map(p => `<button class="chip" data-grant="${p.id}">+ ${escapeHtml(p.title)}</button>`).join('');
-        $('devGrantRow').querySelectorAll('[data-grant]').forEach(btn => btn.addEventListener('click', () => {
-          fetch('/api/dev/grant', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ productId: btn.dataset.grant }) })
-            .then(r => r.json()).then(() => load());
-        }));
+        // Chips erst befuellen, wenn products.json geladen ist (sonst Race mit /api/me).
+        productsReady.then(() => {
+          $('devGrantRow').innerHTML = products.map(p => `<button class="chip" data-grant="${escapeHtml(p.id)}">+ ${escapeHtml(p.title)}</button>`).join('');
+          $('devGrantRow').querySelectorAll('[data-grant]').forEach(btn => btn.addEventListener('click', () => {
+            fetch('/api/dev/grant', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ productId: btn.dataset.grant }) })
+              .then(r => r.json()).then(() => load());
+          }));
+        });
       }
-      // if we were sent here to open a specific plan, offer to continue
-      if (ret && ret.startsWith('/access/')) { showBanner('Du bist angemeldet. Öffne deinen Plan über „Plan öffnen".'); }
+      // if we were sent here to open a specific plan, offer a direct link
+      if (ret && ret.startsWith('/access/')) {
+        const b = $('banner');
+        b.textContent = T.loggedInBanner + ' ';
+        const a = document.createElement('a');
+        a.href = ret;
+        a.textContent = T.openPlanNow;
+        b.appendChild(a);
+        b.classList.remove('hidden');
+      }
     }
 
     function renderLoggedOut(me) {

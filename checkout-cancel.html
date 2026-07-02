@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#0a0a09" />
   <title>Bezahlung abgebrochen — ZENITH</title>
   <meta name="robots" content="noindex" />
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -33,12 +34,12 @@
 <body>
   <main class="card">
     <a class="brand" href="index.html"><span class="z" aria-hidden="true">Z</span><span><strong>ZENITH</strong><em>Gym Coaching</em></span></a>
-    <h1>Bezahlung abgebrochen.</h1>
-    <p>Kein Problem — es wurde <strong>nichts berechnet</strong>. Dein Warenkorb ist weiterhin gespeichert
+    <h1 id="pageTitle">Bezahlung abgebrochen.</h1>
+    <p id="pageLead">Kein Problem — es wurde <strong>nichts berechnet</strong>. Dein Warenkorb ist weiterhin gespeichert
       (in diesem Browser), du kannst also jederzeit ohne Datenverlust weitermachen.</p>
     <div class="actions">
-      <a class="button primary" href="index.html#pakete">Zurück zu den Plänen</a>
-      <a class="button ghost" href="mailto:synastyles@gmail.com?subject=ZENITH%20Checkout-Frage&amp;body=Hallo%2C%0A%0Aich%20habe%20den%20Bezahlvorgang%20abgebrochen%20bzw.%20habe%20eine%20Frage%20dazu%3A%0A%0A(bitte%20kurz%20beschreiben%2C%20was%20du%20kaufen%20wolltest%20oder%20was%20nicht%20funktioniert%20hat)%0A%0AMeine%20E-Mail%3A%20">Frage stellen</a>
+      <a class="button primary" id="btnBack" href="index.html#pakete">Zurück zu den Plänen</a>
+      <a class="button ghost" id="btnAsk" href="mailto:synastyles@gmail.com?subject=ZENITH%20Checkout-Frage&amp;body=Hallo%2C%0A%0Aich%20habe%20den%20Bezahlvorgang%20abgebrochen%20bzw.%20habe%20eine%20Frage%20dazu%3A%0A%0A(bitte%20kurz%20beschreiben%2C%20was%20du%20kaufen%20wolltest%20oder%20was%20nicht%20funktioniert%20hat)%0A%0AMeine%20E-Mail%3A%20">Frage stellen</a>
     </div>
     <div class="legal-foot">
       <a href="impressum.html">Impressum</a>
@@ -47,5 +48,24 @@
       <a href="widerruf.html">Widerruf</a>
     </div>
   </main>
+  <script>
+    (function () {
+      let lang;
+      try { lang = localStorage.getItem('zenith_lang_v1') === 'en' ? 'en' : 'de'; } catch (e) { lang = 'de'; }
+      document.documentElement.lang = lang;
+      if (lang !== 'en') return; // deutsches HTML bleibt Default (auch ohne JS)
+
+      document.title = 'Checkout canceled — ZENITH';
+      document.getElementById('pageTitle').textContent = 'Checkout canceled.';
+      document.getElementById('pageLead').innerHTML = 'No problem — <strong>nothing was charged</strong>. Your cart is still saved (in this browser), so you can pick up right where you left off at any time.';
+      document.getElementById('btnBack').textContent = 'Back to the plans';
+      const ask = document.getElementById('btnAsk');
+      ask.textContent = 'Ask a question';
+      ask.href = 'mailto:synastyles@gmail.com?subject=' + encodeURIComponent('ZENITH checkout question') +
+        '&body=' + encodeURIComponent('Hello,\n\nI canceled the checkout or have a question about it:\n\n(please briefly describe what you wanted to buy or what did not work)\n\nMy email: ');
+      const legal = ['Legal notice', 'Privacy policy', 'Terms', 'Cancellation policy'];
+      document.querySelectorAll('.legal-foot a').forEach((a, i) => { if (legal[i]) a.textContent = legal[i]; });
+    })();
+  </script>
 </body>
 </html>

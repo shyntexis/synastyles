@@ -3,7 +3,7 @@
 import { createServer } from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
 import { readFileSync, existsSync } from 'node:fs';
-import { join, normalize, extname, dirname } from 'node:path';
+import { join, normalize, extname, dirname, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import * as store from './store.mjs';
@@ -85,7 +85,31 @@ async function readBody(req, limit = 1_000_000) {
 }
 async function readJson(req) { try { return JSON.parse((await readBody(req)) || '{}'); } catch (e) { return {}; } }
 
-const PAGE_HEAD = (title) => `<!doctype html><html lang="de"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><meta name="theme-color" content="#0a0a09"/><title>${esc(title)}</title><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/><link rel="stylesheet" href="/products/plans/plan.css"/>`;
+// ---- simple in-memory rate limit (fixed 10-minute window per IP + endpoint) ----
+// Protects the unauthenticated POST endpoints against abuse (JSON store on a
+// small disk). No setInterval: expired entries are cleaned up on each access.
+const RATE_WINDOW_MS = 10 * 60 * 1000;
+const rateBuckets = new Map(); // key: `${scope}:${ip}` -> { count, windowStart }
+function clientIp(req) {
+  // Render sits behind a proxy — first X-Forwarded-For entry is the client.
+  const fwd = req.headers && req.headers['x-forwarded-for'];
+  if (fwd) { const first = String(fwd).split(',')[0].trim(); if (first) return first; }
+  return (req.socket && req.socket.remoteAddress) || 'unknown';
+}
+function rateLimited(req, scope, limit) {
+  const now = Date.now();
+  for (const [k, v] of rateBuckets) { if (now - v.windowStart > RATE_WINDOW_MS) rateBuckets.delete(k); }
+  const key = scope + ':' + clientIp(req);
+  const b = rateBuckets.get(key);
+  if (!b) { rateBuckets.set(key, { count: 1, windowStart: now }); return false; }
+  b.count += 1;
+  return b.count > limit;
+}
+function rateLimitResponse(res) {
+  return sendJson(res, 429, { ok: false, error: 'rate_limited', message: 'Zu viele Anfragen in kurzer Zeit. Bitte warte ein paar Minuten und versuche es dann erneut.' });
+}
+
+const PAGE_HEAD = (title) => `<!doctype html><html lang="de"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><meta name="theme-color" content="#0a0a09"/><title>${esc(title)}</title><link rel="icon" type="image/svg+xml" href="/assets/favicon.svg"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/><link rel="stylesheet" href="/products/plans/plan.css"/>`;
 
 function safeFilePart(s) { return String(s || '').toLowerCase().replace(/[^a-z0-9_-]+/g, '-').replace(/^-+|-+$/g, '') || 'plan'; }
 function planPdfName(product) { return safeFilePart(product.slug || product.id || product.title) + '.pdf'; }
@@ -158,7 +182,6 @@ function renderAccessPage(res, product, email, innerHtml, token) {
     .access-bar .who{display:flex;align-items:center;gap:11px}.access-bar .who .plan-z{width:36px;height:36px}.access-bar .meta{display:grid;line-height:1.15}.access-bar .meta strong{letter-spacing:.18em;font-size:14px}.access-bar .meta em{font-style:normal;color:#bba76f;font-size:12px}
     .access-bar .links{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.access-bar .links a,.access-bar .links button{font:inherit;font-size:13px;font-weight:800;color:#f5eedf;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.13);border-radius:999px;padding:9px 14px;cursor:pointer;text-decoration:none}.access-bar .links a.primary{color:#170f04;background:linear-gradient(135deg,#ffe9bd,#e7be6c 50%,#f0a23a);border:0}.access-bar .links a:hover,.access-bar .links button:hover{filter:brightness(1.06)}
     .access-tag{display:inline-block;padding:6px 12px;border-radius:999px;border:1px solid rgba(231,190,108,.3);background:rgba(231,190,108,.1);color:#ffe2a0;font-size:12px;font-weight:700}
-    .video-slot{margin:28px 0 0;padding:22px 24px;border:1px dashed rgba(231,190,108,.42);border-radius:18px;background:linear-gradient(135deg,rgba(231,190,108,.08),rgba(255,255,255,.025));color:#d9d1c0}.video-slot b{color:#ffe2a0}
   </style></head><body>
   <div class="access-bar">
     <div class="who"><span class="plan-z" aria-hidden="true">Z</span><div class="meta"><strong>ZENITH</strong><em>Dein Zugang</em></div></div>
@@ -166,7 +189,6 @@ function renderAccessPage(res, product, email, innerHtml, token) {
   </div>
   <main class="plan">
     ${innerHtml}
-    <div class="video-slot"><b>🎬 Video-Lektion folgt hier.</b><br>Zu diesem Plan kommen kurze, editierte Coaching-Videos. Die PDF-Version kannst du oben herunterladen.</div>
   </main>
   <script>document.getElementById('logoutBtn').addEventListener('click',function(){fetch('/api/logout',{method:'POST'}).then(function(){location.href='/account.html'})});</script>
   </body></html>`;
@@ -310,6 +332,9 @@ async function handleNewsletter(req, res) {
   }
   try {
     const r = await store.addNewsletterSubscriber({ email, source, interest });
+    if (!r.ok && r.reason === 'full') {
+      return sendJson(res, 200, { ok: false, error: 'list_full', message: 'Die Liste ist derzeit voll — es sind keine neuen Anmeldungen möglich. Schreib uns gern direkt an synastyles@gmail.com.' });
+    }
     if (!r.ok) return sendJson(res, 200, { ok: false, error: 'invalid_email', message: 'Bitte gib eine gültige E-Mail-Adresse ein.' });
     return sendJson(res, 200, {
       ok: true, already: !!r.already,
@@ -352,7 +377,11 @@ async function handleComplete(req, res, url) {
 }
 
 async function handleWebhook(req, res) {
-  const raw = await readBody(req);
+  // readBody kann rejecten (Body > 1 MB oder Verbindungsfehler) — das darf den
+  // Prozess niemals beenden, sondern muss als 400 beantwortet werden.
+  let raw;
+  try { raw = await readBody(req); }
+  catch (e) { return sendJson(res, 400, { error: 'Anfrage konnte nicht gelesen werden (zu groß oder abgebrochen).' }); }
   const secret = process.env.STRIPE_WEBHOOK_SECRET;
   if (!secret) return sendJson(res, 400, { error: 'STRIPE_WEBHOOK_SECRET nicht gesetzt — Webhook deaktiviert. Siehe SELLING_LIVE_SETUP.md' });
   const event = stripe.verifyWebhook(raw, req.headers['stripe-signature'], secret);
@@ -502,30 +531,49 @@ async function handleDevGrant(req, res) {
 
 // ---------------- static ----------------
 async function serveStatic(req, res, pathname) {
-  let rel = decodeURIComponent(pathname);
+  let rel;
+  try { rel = decodeURIComponent(pathname); }
+  catch { return lockedPage(res, 403, 'Gesperrt', 'Ungültiger Pfad.'); }
   if (rel === '/' || rel === '') rel = '/index.html';
 
-  // Hard blocks: server internals, env, raw db.
-  if (rel.startsWith('/server/') || rel === '/.env' || rel.startsWith('/.env') || rel.startsWith('/.git')) {
+  // Canonicalize FIRST, then decide access on the resolved path. Doing the checks
+  // on the raw string let encoded "./" segments (%2E%2F) and case/separator tricks
+  // slip past the blocks and reach files under ROOT (e.g. .env, discount config).
+  const filePath = normalize(join(ROOT, rel));
+  if (filePath !== ROOT && !filePath.startsWith(ROOT + sep)) {
+    return lockedPage(res, 403, 'Gesperrt', 'Ungültiger Pfad.');
+  }
+  // ROOT-relative path, forward slashes, lower-cased for case-insensitive matching.
+  const relPath = filePath.slice(ROOT.length).split(sep).join('/');
+  const relLower = relPath.toLowerCase();
+  const segments = relLower.split('/').filter(Boolean);
+
+  // Hard blocks (evaluated on the canonical path):
+  //  - any dotfile segment (.env, .env.example, .git, ...)
+  //  - server internals
+  //  - the raw discount config (affiliate names + Stripe coupon links)
+  if (segments.some((s) => s.startsWith('.')) ||
+      relLower === '/server' || relLower.startsWith('/server/') ||
+      relLower === '/data/discount-codes.json') {
     return lockedPage(res, 403, 'Gesperrt', 'Dieser Bereich ist nicht öffentlich.');
   }
-  // Discount codes are validated server-side only — never expose the raw config
-  // (holds affiliate names + Stripe coupon links) or let the code list be enumerated.
-  if (rel === '/data/discount-codes.json') {
-    return lockedPage(res, 403, 'Gesperrt', 'Diese Datei ist nicht öffentlich.');
-  }
   // Block full buyer plan files in the public plans folder (plan.css stays allowed).
-  if (/^\/products\/plans\/.+\.(html|md)$/i.test(rel)) {
+  if (/^\/products\/plans\/.+\.(html|md)$/i.test(relLower)) {
     return lockedPage(res, 403, 'Nur für Käufer', 'Die vollständigen Pläne sind privat. Nach dem Kauf erhältst du einen persönlichen Zugangslink in deinem Konto.');
   }
 
-  const filePath = normalize(join(ROOT, rel));
-  if (!filePath.startsWith(ROOT)) return lockedPage(res, 403, 'Gesperrt', 'Ungültiger Pfad.');
   try {
     const info = await stat(filePath);
     const target = info.isDirectory() ? join(filePath, 'index.html') : filePath;
     const data = await readFile(target);
-    send(res, 200, data, { 'Content-Type': MIME[extname(target).toLowerCase()] || 'application/octet-stream' });
+    const ext = extname(target).toLowerCase();
+    // Statische Assets (CSS/JS/Bilder/Fonts/SVG/XML/TXT …) dürfen 1 h gecacht
+    // werden. HTML bleibt no-store (send()-Default), damit Inhalte sofort
+    // aktualisieren; /api/-, /auth/- und /access/-Antworten laufen nicht über
+    // serveStatic und behalten ebenfalls no-store.
+    const headers = { 'Content-Type': MIME[ext] || 'application/octet-stream' };
+    if (ext && ext !== '.html') headers['Cache-Control'] = 'public, max-age=3600';
+    send(res, 200, data, headers);
   } catch (e) {
     send(res, 404, '<h1>404</h1><p>Nicht gefunden. <a href="/">Zur Startseite</a></p>', { 'Content-Type': 'text/html; charset=utf-8' });
   }
@@ -539,28 +587,39 @@ const server = createServer(async (req, res) => {
     const m = req.method;
 
     if (p === '/api/checkout-status' && m === 'GET') return sendJson(res, 200, statusPayload(req));
-    if (p === '/api/create-checkout-session' && m === 'POST') return handleCreateSession(req, res);
-    if (p === '/api/discount/validate' && m === 'POST') return handleDiscountValidate(req, res);
-    if (p === '/api/newsletter' && m === 'POST') return handleNewsletter(req, res);
-    if (p === '/api/checkout/complete' && m === 'GET') return handleComplete(req, res, url);
-    if (p === '/api/stripe/webhook' && m === 'POST') return handleWebhook(req, res);
-    if (p === '/api/me' && m === 'GET') return handleMe(req, res);
+    if (p === '/api/create-checkout-session' && m === 'POST') {
+      if (rateLimited(req, 'session', 30)) return rateLimitResponse(res);
+      return await handleCreateSession(req, res);
+    }
+    if (p === '/api/discount/validate' && m === 'POST') {
+      if (rateLimited(req, 'discount', 60)) return rateLimitResponse(res);
+      return await handleDiscountValidate(req, res);
+    }
+    if (p === '/api/newsletter' && m === 'POST') {
+      if (rateLimited(req, 'newsletter', 10)) return rateLimitResponse(res);
+      return await handleNewsletter(req, res);
+    }
+    if (p === '/api/checkout/complete' && m === 'GET') return await handleComplete(req, res, url);
+    if (p === '/api/stripe/webhook' && m === 'POST') return await handleWebhook(req, res);
+    if (p === '/api/me' && m === 'GET') return await handleMe(req, res);
     if (p === '/api/logout' && m === 'POST') return sendJson(res, 200, { ok: true }, { 'Set-Cookie': auth.clearSessionCookie(SECURE) });
 
     if (p === '/auth/google/start' && m === 'GET') return handleGoogleStart(res, url);
-    if (p === '/auth/google/callback' && m === 'GET') return handleGoogleCallback(req, res, url);
+    if (p === '/auth/google/callback' && m === 'GET') return await handleGoogleCallback(req, res, url);
 
-    if (auth.devAuthEnabled() && p === '/api/dev/login' && m === 'POST') return handleDevLogin(req, res);
-    if (auth.devAuthEnabled() && p === '/api/dev/grant' && m === 'POST') return handleDevGrant(req, res);
+    if (auth.devAuthEnabled() && p === '/api/dev/login' && m === 'POST') return await handleDevLogin(req, res);
+    if (auth.devAuthEnabled() && p === '/api/dev/grant' && m === 'POST') return await handleDevGrant(req, res);
 
-    if (p.startsWith('/access/') && p.endsWith('/download.pdf') && m === 'GET') return handleAccessDownload(req, res, p);
-    if (p.startsWith('/access/') && m === 'GET') return handleAccess(req, res, p);
+    if (p.startsWith('/access/') && p.endsWith('/download.pdf') && m === 'GET') return await handleAccessDownload(req, res, p);
+    if (p.startsWith('/access/') && m === 'GET') return await handleAccess(req, res, p);
 
     if (p.startsWith('/api/')) return sendJson(res, 404, { error: 'unknown endpoint' });
     if (m !== 'GET' && m !== 'HEAD') return sendJson(res, 405, { error: 'method not allowed' });
-    return serveStatic(req, res, p);
+    return await serveStatic(req, res, p);
   } catch (e) {
-    sendJson(res, 500, { error: 'server error' });
+    console.error('request failed:', e);
+    if (!res.headersSent) sendJson(res, 500, { error: 'server error' });
+    else try { res.end(); } catch (e2) { /* connection already gone */ }
   }
 });
 
@@ -568,5 +627,11 @@ server.listen(PORT, () => {
   const s = statusPayload({ headers: {} });
   console.log(`ZENITH server: ${SITE}`);
   console.log(`  Stripe:  ${s.mode === 'live' ? 'LIVE' : 'DEMO/Setup'}   Google: ${s.googleConfigured ? 'konfiguriert' : 'fehlt'}   DEV_AUTH: ${s.devAuth ? 'AN (nur lokal!)' : 'aus'}`);
-  if (auth.sessionSecretMissing) console.log('  ! SESSION_SECRET fehlt — Sessions sind nur temporär. Für Produktion in .env setzen.');
+  if (auth.sessionSecretMissing) console.log('  ! SESSION_SECRET fehlt — Sessions sind nur temporär. Achtung: Ohne stabiles SESSION_SECRET werden nach jedem Neustart/Deploy auch alle bereits verkauften /access/-Zugangslinks und PDF-Download-Links ungültig. Für Produktion zwingend in .env setzen.');
 });
+
+// Last-resort guards: log the error, keep the process alive. A single bad
+// request must never take the whole shop down (Node 20 would otherwise
+// terminate the process on an unhandled rejection).
+process.on('unhandledRejection', (err) => { console.error('unhandledRejection:', err); });
+process.on('uncaughtException', (err) => { console.error('uncaughtException:', err); });
