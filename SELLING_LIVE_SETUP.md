@@ -53,15 +53,18 @@ ist die Route deaktiviert (kein Crash, HTTP 400); dann erfolgt die Freischaltung
 
 ## 3b. Rabattcodes & Newsletter (Go-Live)
 
-Die Codes in `data/discount-codes.json` (LAUNCH20 20 %, RESET15 15 %, FRIEND10 10 %) sind zunächst
-**nur Vorschau/Attribution** — der Checkout berechnet den regulären Preis, bis ein echter Stripe-Coupon
-verknüpft ist. So machst du einen Code checkout-wahr:
+**Stand 2026-07-02: Die drei Stripe-Coupons existieren im Live-Account und sind in
+`data/discount-codes.json` verknüpft** (`stripeCouponId`: LAUNCH20 20 %, RESET15 15 %,
+FRIEND10 10 % — Coupon-IDs identisch mit den Code-Namen). Die Codes reduzieren damit den
+tatsächlich von Stripe berechneten Betrag. Eine Env-Variable (`STRIPE_COUPON_…`) ist nur
+noch nötig, wenn du eine Coupon-ID übersteuern willst.
 
-1. Stripe Dashboard (Live-Modus) → Produktkatalog → **Coupons** → Coupon anlegen (z. B. 20 % off für
-   LAUNCH20, 15 % für RESET15, 10 % für FRIEND10). Der Prozentsatz **muss** dem `percentOff` in
-   `data/discount-codes.json` entsprechen.
-2. Coupon-ID (`coupon_…`) als Env-Variable setzen (`STRIPE_COUPON_LAUNCH20` / `_RESET15` / `_FRIEND10`)
-   → **redeploy**.
+So legst du KÜNFTIGE Codes checkout-wahr an:
+
+1. Stripe Dashboard (Live-Modus) → Produktkatalog → **Coupons** → Coupon anlegen. Der Prozentsatz
+   **muss** dem `percentOff` in `data/discount-codes.json` entsprechen.
+2. Coupon-ID in `data/discount-codes.json` als `stripeCouponId` eintragen (oder als Env-Variable,
+   Name in `stripeCouponEnvKey`) → **redeploy**.
 3. **Testkauf** mit dem Code: Der auf der Website angezeigte Betrag muss exakt dem von Stripe
    abgebuchten entsprechen. Erst danach den Code öffentlich bewerben.
 
@@ -71,7 +74,9 @@ von selbst (sie zeigt `stripeApplied: false` und hält den regulären Preis).
 **Newsletter:** `POST /api/newsletter` speichert Anmeldungen dedupliziert im JSON-Store
 (`db.json` → `newsletter[]`). Dafür gilt dieselbe Persistenz-Anforderung wie in Abschnitt 1
 (Render-Disk / `ZENITH_DATA_DIR`) — sonst gehen Anmeldungen **und** eingelöste Codes bei jedem
-Deploy verloren.
+Deploy verloren. **Neu:** Jede erfolgreiche Anmeldung liefert zusätzlich einen persönlichen,
+signierten Zugangslink zum kostenlosen **7-Day Gym Reset** (`freeAccess` in der API-Antwort;
+funktioniert unabhängig vom Store, solange `SESSION_SECRET` stabil bleibt).
 
 ## 4. Google OAuth (optional)
 

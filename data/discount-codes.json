@@ -14,7 +14,7 @@
       "maxRedemptions": null,
       "minSubtotalCents": 0,
       "appliesToProductIds": null,
-      "stripeCouponId": "",
+      "stripeCouponId": "LAUNCH20",
       "stripeCouponEnvKey": "STRIPE_COUPON_LAUNCH20"
     },
     {
@@ -30,7 +30,7 @@
       "maxRedemptions": null,
       "minSubtotalCents": 0,
       "appliesToProductIds": null,
-      "stripeCouponId": "",
+      "stripeCouponId": "RESET15",
       "stripeCouponEnvKey": "STRIPE_COUPON_RESET15"
     },
     {
@@ -46,7 +46,7 @@
       "maxRedemptions": null,
       "minSubtotalCents": 0,
       "appliesToProductIds": null,
-      "stripeCouponId": "",
+      "stripeCouponId": "FRIEND10",
       "stripeCouponEnvKey": "STRIPE_COUPON_FRIEND10"
     },
     {

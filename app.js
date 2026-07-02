@@ -101,7 +101,14 @@ if (emailForm) {
       fail: 'Sign-up is not available right now (maybe a static preview). Feel free to email me directly.'
     }
   };
+  const nlEsc = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  // Gratis-Produkt (7-Day Gym Reset): persönlicher Zugangslink direkt nach Anmeldung.
+  const FREE_MSG = {
+    de: (fa, already) => `${already ? 'Du bist schon auf der Liste.' : 'Eingetragen!'} Dein <strong>${nlEsc(fa.title)}</strong> ist freigeschaltet: <a href="${nlEsc(fa.accessPath)}" target="_blank" rel="noopener">Jetzt öffnen</a> — der Link ist persönlich und an deine E-Mail gebunden.`,
+    en: (fa, already) => `${already ? 'You are already on the list.' : 'You are in!'} Your <strong>${nlEsc(fa.title)}</strong> is unlocked: <a href="${nlEsc(fa.accessPath)}" target="_blank" rel="noopener">Open it now</a> — the link is personal and tied to your email.`
+  };
   const setStat = (msg, kind) => { if (status) { status.className = 'newsletter-status' + (kind ? ' ' + kind : ''); status.textContent = msg; } };
+  const setStatHtml = (html, kind) => { if (status) { status.className = 'newsletter-status' + (kind ? ' ' + kind : ''); status.innerHTML = html; } };
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -121,9 +128,13 @@ if (emailForm) {
     } catch (e) { data = null; }
     if (submit) submit.disabled = false;
     if (data && data.ok) {
-      // Server-Meldungen sind deutsch; im EN-Modus lokale Texte verwenden.
-      const okMsg = zenithLang() === 'en' ? (data.already ? t.already : t.done) : (data.message || t.done);
-      setStat(okMsg, 'ok');
+      if (data.freeAccess && data.freeAccess.accessPath) {
+        setStatHtml(FREE_MSG[zenithLang()](data.freeAccess, !!data.already), 'ok');
+      } else {
+        // Server-Meldungen sind deutsch; im EN-Modus lokale Texte verwenden.
+        const okMsg = zenithLang() === 'en' ? (data.already ? t.already : t.done) : (data.message || t.done);
+        setStat(okMsg, 'ok');
+      }
       if (input) input.value = '';
     } else {
       const msg = zenithLang() === 'en' ? t.fail : ((data && data.message) ? data.message : t.fail);
@@ -554,14 +565,18 @@ if (emailForm) {
   const all = (sel) => Array.from(document.querySelectorAll(sel));
   const translations = {
     de: { nav: ['Pakete','Mini-Pläne','Ablauf','Kontakt','Konto','Plan ansehen'], h1:'Dein Gym-Plan, den du wirklich durchziehst.', lead:'Klare Übungen, einfache Ernährung und ein Plan, der in deinen Alltag passt. Kein Rätselraten mehr, was du heute im Gym machen sollst.', cta1:'Plan ansehen', cta2:'TikTok ansehen', note:'Pläne ab €9 · faire Launch-Preise', chips:['Trainingsplan','Ernährung','Wochenstruktur','Cardio'], packagesEyebrow:'Coaching-Pakete', packagesTitle:'Wähle deinen Plan.', packagesText:'Faire Launch-Preise zum Start. Du zahlst wenig, bekommst aber einen klaren, umsetzbaren Plan. Die Buttons legen deine Auswahl direkt in den Warenkorb; der Checkout leitet zur sicheren Stripe-Zahlung weiter.', flowEyebrow:"So läuft's ab", flowTitle:'Kein Hype. Nur ein Plan, den du umsetzt.', flowText:'Du musst nichts recherchieren und nichts zusammenbasteln. Du holst dir den Plan und arbeitest ihn ab.', contactTitle:'Schreib mir.', contactText:'Du hast eine Frage zum Plan oder weißt nicht, welches Paket zu dir passt? Melde dich einfach — am schnellsten per E-Mail.', finalTitle:'Hör auf zu sammeln. Hol dir einen Plan und zieh ihn durch.', finalBtn:'Beliebten Plan in den Warenkorb', footerLegal:'Rechtliches & Kontakt', cart:'Warenkorb',
-      launchHtml:'<span class="launch-badge">Launch</span> Hast du einen Rabatt- oder Creator-Code? Löse ihn direkt im Checkout ein.',
+      launchHtml:'<span class="launch-badge">Launch</span> Rabattcode <strong>LAUNCH20</strong> = 20 % auf alles — direkt im Checkout einlösen.',
       heroChipPlan:['Heute · Oberkörper','4 Übungen · ca. 45 Min'], heroChipPrice:'ab €9', ribbon:'Beliebt',
       valueStrip:[['Klarer Plan','Übungen, Sätze und Wiederholungen — du weißt jeden Tag, was ansteht.'],['Einfache Ernährung','Eine Essensstruktur und Einkaufslogik, die im Alltag funktioniert.'],['Wochenstruktur','Training, Cardio und Erholung sinnvoll über die Woche verteilt.']],
       addonsEyebrow:'Einzelne Mini-Pläne', addonsTitle:'Kleine Pläne. Fairer Preis. Sofort nutzbar.', addonsText:'Günstige Einzelteile für alle, die erst einmal mit einer Sache anfangen wollen.', addonAdd:'In den Warenkorb',
-      addonCards:[['Essensplan','3 einfache Tagesstrukturen'],['Supplement-Guide','Was Sinn macht — und was nicht'],['Cardio Plan','Cardio ohne planloses Rennen'],['Schlaf & Erholung','Besser regenerieren'],['Technik-Checkliste','Saubere Ausführung im Gym']],
+      addonCards:[['Essensplan','3 einfache Tagesstrukturen'],['Supplement-Guide','Was Sinn macht — und was nicht'],['Cardio Plan','Cardio ohne planloses Rennen'],['Schlaf & Erholung','Besser regenerieren'],['Technik-Checkliste','Saubere Ausführung im Gym'],['Meal-Prep Cheatsheet','1× kochen, Woche versorgt']],
       trust:[['Sichere Zahlung','Bezahlung läuft verschlüsselt über Stripe. Deine Kartendaten sehen wir nie.'],['Sofort verfügbar','Direkt nach der Zahlung bekommst du deinen persönlichen Zugangslink.'],['Persönlicher Zugang','Deine Pläne liegen unter einem eigenen Link — online lesen oder als PDF laden.'],['Kein Abo','Einmal zahlen, dauerhaft behalten. Keine versteckten Kosten, keine Verlängerung.']],
       roadmapEyebrow:'In Arbeit', roadmapTitle:'Bald bei ZENITH.', roadmapText:'Diese Pläne sind in Vorbereitung. Trag dich in den Newsletter ein, dann sagen wir dir Bescheid, sobald sie live sind — oft zuerst mit einem Launch-Rabatt.',
-      roadmapCards:[['Geplant','7-Day Gym Reset','Eine Woche klare Struktur zum Wiedereinstieg — Tag für Tag.'],['Geplant','30-Day Challenge','Ein Monat mit festem Fahrplan, Check-ins und Progression.'],['Geplant','Home-Workout Plan','Training ohne Geräte für zuhause oder unterwegs.'],['Geplant','Meal-Prep Cheatsheet','Vorkochen ohne Stress: Baukasten statt starrer Rezepte.'],['Geplant','Bulk / Cut Starter','Auf- oder Abbau sauber aufgesetzt, mit realistischer Kalorienlogik.'],['Idee','Video-Analyse Light','Schick ein kurzes Übungsvideo, bekomm konkretes Technik-Feedback.']],
+      roadmapCards:[['Geplant','Home-Workout Plan','Training ohne Geräte für zuhause oder unterwegs.'],['Geplant','Bulk / Cut Starter','Auf- oder Abbau sauber aufgesetzt, mit realistischer Kalorienlogik.'],['Idee','Video-Analyse Light','Schick ein kurzes Übungsvideo, bekomm konkretes Technik-Feedback.']],
+      tabs:['Pakete','Challenge','Mini-Pläne','Ablauf','FAQ','Newsletter','Kontakt'],
+      challengeEyebrow:'Neu · Programm', challengeTitle:'Die 30-Day Challenge.', challengeText:'Ein Monat, ein Plan — und etwas, das dich dranbleiben lässt. Vier Wochenblöcke mit klarer Progression, dazu ein druckbarer Tracker zum Abhaken.',
+      challengeCard:['Programm · 30 Tage','30-Day Challenge','Vier Wochen mit festem Fahrplan, Check-ins und Progression — plus druckbarer 30-Tage-Tracker für jeden Tag.','In den Warenkorb',['4 Wochenblöcke mit klarer Progression','Druckbarer 30-Tage-Tracker','Check-ins: woran du Fortschritt erkennst','Plan B für verpasste Tage']], challengeRibbon:'Neu',
+      nlFreebieHtml:'<span class="launch-badge">Gratis</span> Als Dankeschön: der <strong>7-Day Gym Reset</strong> — 7 Tage klare Struktur zum (Wieder-)Einstieg. Dein persönlicher Zugangslink erscheint direkt nach der Anmeldung.',
       faqEyebrow:'Häufige Fragen', faqTitle:'Kurz erklärt.', faqText:'Alles, was du vor dem Kauf wissen willst. Noch eine Frage offen? Schreib mir einfach.',
       faq:[['Wie bekomme ich meinen Plan nach dem Kauf?','Direkt nach der Zahlung über Stripe erhältst du einen persönlichen Zugangslink. Darüber liest du deinen Plan online oder lädst ihn als PDF herunter. Wenn du eine E-Mail hinterlegst, schicken wir dir den Link zusätzlich zu.'],['Brauche ich ein Konto oder einen Google-Login?','Nein. Der Kauf läuft über den Stripe-Checkout und einen persönlichen Zugangslink. Ein Konto-Login ist optional und nur dafür da, deine Käufe gebündelt an einem Ort zu sehen.'],['Wie funktionieren Rabatt- und Creator-Codes?','Du gibst deinen Code im Checkout ein. Ist ein passender Rabatt bei Stripe aktiv, wird er direkt vom Preis abgezogen — du zahlst nie mehr und nie weniger, als dir angezeigt wird. Ist ein Code noch nicht bei Stripe hinterlegt, gilt der reguläre Preis, und wir behalten den Code für dich im Blick.'],['Ist das ein Abo?','Nein. Du zahlst einmal und behältst deinen Plan dauerhaft. Keine automatische Verlängerung, keine versteckten Kosten.'],['Für wen sind die Pläne gedacht?','Für Einsteiger und Wiedereinsteiger, die eine klare Struktur wollen statt sich alles selbst zusammenzusuchen. Die Inhalte sind allgemeine Fitness- und Trainingsinformationen und ersetzen keine medizinische Beratung.'],['Kann ich mein Geld zurückbekommen?','Es handelt sich um digitale Inhalte, die sofort bereitgestellt werden. Die Details zum Widerruf findest du in der <a href="widerruf.html">Widerrufsbelehrung</a>. Bei Problemen melde dich einfach — wir finden eine faire Lösung.']],
       nlEyebrow:'Newsletter', nlTitle:'Trainings-Tipps & Launch-Angebote.', nlText:'Ein kurzer Impuls ab und zu: umsetzbare Tipps, neue Pläne und Rabattcodes zuerst. Kein Spam, jederzeit abbestellbar.', nlSubmit:'Eintragen', nlPlaceholder:'deine@email.de', nlInterest:['Interesse (optional)','Training','Ernährung','Komplett-Paket','Nur Angebote'],
@@ -574,7 +589,7 @@ if (emailForm) {
       footerNote:'Hinweis: Die Inhalte sind allgemeine Fitness- und Trainingsinformationen und ersetzen keine medizinische Beratung. Bei Fragen erreichst du uns über synastyles@gmail.com.',
       legalLinks:['Impressum','Datenschutz','AGB','Widerruf'],
       cartEyebrow:'Warenkorb', cartTitle:'Deine Auswahl', totalLabel:'Gesamt', cartCheckoutBtn:'Zum Checkout', cartClearBtn:'Warenkorb leeren',
-      checkoutTitle:'Bestellung abschließen', codeLabelHtml:'Rabatt- oder Creator-Code <span>(optional)</span>', codePlaceholder:'Dein Code', applyBtn:'Anwenden', emailLabel:'E-Mail für die Lieferung', checkoutSubmitInitial:'Weiter',
+      checkoutTitle:'Bestellung abschließen', codeLabelHtml:'Rabatt- oder Creator-Code <span>(optional)</span>', codePlaceholder:'z. B. LAUNCH20', applyBtn:'Anwenden', emailLabel:'E-Mail für die Lieferung', checkoutSubmitInitial:'Weiter',
       legalContentHtml:'Ich verstehe, dass es sich um digitale Inhalte mit allgemeinen Fitness- und Trainingsinformationen handelt — keine medizinische Beratung und keine garantierten Ergebnisse.',
       legalAcceptHtml:'Ich habe die <a href="agb.html" target="_blank" rel="noopener">AGB</a>, die <a href="datenschutz.html" target="_blank" rel="noopener">Datenschutzerklärung</a> und die <a href="widerruf.html" target="_blank" rel="noopener">Widerrufsbelehrung</a> gelesen und akzeptiere sie.',
       skipLink:'Zum Inhalt springen',
@@ -583,14 +598,18 @@ if (emailForm) {
       metaDescription:'Klare Trainingspläne, einfache Ernährung und eine Wochenstruktur, die in deinen Alltag passt. Gym-Coaching von Tristan unter der Marke ZENITH.',
       aria:{ nav:'Hauptnavigation', home:'ZENITH Startseite', langToggle:'Sprache wechseln', navToggle:'Navigation öffnen', microProof:'Inhalte', trust:'Warum ZENITH', interest:'Woran hast du Interesse?', closeCart:'Warenkorb schließen', close:'Schließen', closeLang:'Sprachauswahl schließen', nlEmail:'E-Mail-Adresse', nlInterest:'Interesse' } },
     en: { nav: ['Packages','Mini plans','How it works','Contact','Account','View plans'], h1:'A gym plan you will actually follow.', lead:'Clear workouts, simple nutrition and a weekly structure that fits your life. No more guessing what to train today.', cta1:'View plans', cta2:'Watch TikTok', note:'Plans from €9 · fair launch prices', chips:['Training plan','Nutrition','Weekly structure','Cardio'], packagesEyebrow:'Coaching packages', packagesTitle:'Choose your plan.', packagesText:'Fair launch prices. You get a clear, actionable plan without overpaying. Buttons add your choice to the cart; checkout redirects to secure Stripe payment.', flowEyebrow:'How it works', flowTitle:'No hype. Just a plan you execute.', flowText:'No research, no guessing, no building your own routine. Get the plan and follow it.', contactTitle:'Message me.', contactText:'Have a question or not sure which package fits? Reach out — email is fastest.', finalTitle:'Stop collecting tips. Get a plan and follow it.', finalBtn:'Add popular plan to cart', footerLegal:'Legal & contact', cart:'Cart',
-      launchHtml:'<span class="launch-badge">Launch</span> Got a discount or creator code? Redeem it right in the checkout.',
+      launchHtml:'<span class="launch-badge">Launch</span> Discount code <strong>LAUNCH20</strong> = 20% off everything — redeem right in the checkout.',
       heroChipPlan:['Today · Upper body','4 exercises · about 45 min'], heroChipPrice:'from €9', ribbon:'Popular',
       valueStrip:[['Clear plan','Exercises, sets and reps — you know what to do every single day.'],['Simple nutrition','An eating structure and shopping logic that works in everyday life.'],['Weekly structure','Training, cardio and recovery spread sensibly across your week.']],
       addonsEyebrow:'Individual mini plans', addonsTitle:'Small plans. Fair prices. Ready to use.', addonsText:'Affordable single pieces for anyone who wants to start with one thing first.', addonAdd:'Add to cart',
-      addonCards:[['Meal plan','3 simple daily structures'],['Supplement guide','What makes sense — and what does not'],['Cardio plan','Cardio without aimless running'],['Sleep & recovery','Recover better'],['Form checklist','Clean technique in the gym']],
+      addonCards:[['Meal plan','3 simple daily structures'],['Supplement guide','What makes sense — and what does not'],['Cardio plan','Cardio without aimless running'],['Sleep & recovery','Recover better'],['Form checklist','Clean technique in the gym'],['Meal-Prep Cheatsheet','Cook once, sorted for the week']],
       trust:[['Secure payment','Payment is encrypted through Stripe. We never see your card details.'],['Instant access','Right after payment you get your personal access link.'],['Personal access','Your plans live under your own link — read online or download as PDF.'],['No subscription','Pay once, keep it for good. No hidden fees, no renewals.']],
       roadmapEyebrow:'In progress', roadmapTitle:'Coming soon to ZENITH.', roadmapText:'These plans are in the works. Join the newsletter and we will let you know the moment they go live — often with a launch discount first.',
-      roadmapCards:[['Planned','7-Day Gym Reset','One week of clear structure to get back on track — day by day.'],['Planned','30-Day Challenge','A month with a fixed roadmap, check-ins and progression.'],['Planned','Home-Workout Plan','Training with no equipment, at home or on the go.'],['Planned','Meal-Prep Cheatsheet','Batch cooking without stress: a toolkit instead of rigid recipes.'],['Planned','Bulk / Cut Starter','Bulking or cutting set up cleanly, with realistic calorie logic.'],['Idea','Video Analysis Light','Send a short exercise clip, get concrete form feedback.']],
+      roadmapCards:[['Planned','Home-Workout Plan','Training with no equipment, at home or on the go.'],['Planned','Bulk / Cut Starter','Bulking or cutting set up cleanly, with realistic calorie logic.'],['Idea','Video Analysis Light','Send a short exercise clip, get concrete form feedback.']],
+      tabs:['Packages','Challenge','Mini plans','How it works','FAQ','Newsletter','Contact'],
+      challengeEyebrow:'New · Program', challengeTitle:'The 30-Day Challenge.', challengeText:'One month, one plan — and something that keeps you going. Four weekly blocks with clear progression, plus a printable tracker to tick off.',
+      challengeCard:['Program · 30 days','30-Day Challenge','Four weeks with a fixed roadmap, check-ins and progression — plus a printable 30-day tracker for every day.','Add to cart',['4 weekly blocks with clear progression','Printable 30-day tracker','Check-ins: how to spot progress','Plan B for missed days']], challengeRibbon:'New',
+      nlFreebieHtml:'<span class="launch-badge">Free</span> As a thank-you: the <strong>7-Day Gym Reset</strong> — 7 days of clear structure to get (back) on track. Your personal access link appears right after signing up.',
       faqEyebrow:'Frequently asked', faqTitle:'Quick answers.', faqText:'Everything you want to know before buying. Still have a question? Just message me.',
       faq:[['How do I get my plan after buying?','Right after paying through Stripe you receive a personal access link. Use it to read your plan online or download it as a PDF. If you leave an email, we send you the link as well.'],['Do I need an account or a Google login?','No. The purchase runs through Stripe checkout and a personal access link. An account login is optional and only there to see all your purchases in one place.'],['How do discount and creator codes work?','You enter your code in the checkout. If a matching discount is active in Stripe, it is deducted from the price directly — you never pay more or less than what you see. If a code is not yet set up in Stripe, the regular price applies and we keep an eye on the code for you.'],['Is this a subscription?','No. You pay once and keep your plan for good. No automatic renewal, no hidden costs.'],['Who are the plans for?','For beginners and returners who want clear structure instead of piecing it together themselves. The content is general fitness and training information and does not replace medical advice.'],['Can I get a refund?','This is digital content that is provided immediately. Details on withdrawal are in the <a href="widerruf.html">cancellation policy</a>. If anything goes wrong, just reach out — we will find a fair solution.']],
       nlEyebrow:'Newsletter', nlTitle:'Training tips & launch offers.', nlText:'A short nudge now and then: actionable tips, new plans and discount codes first. No spam, unsubscribe anytime.', nlSubmit:'Sign up', nlPlaceholder:'you@email.com', nlInterest:['Interest (optional)','Training','Nutrition','Complete Bundle','Offers only'],
@@ -603,7 +622,7 @@ if (emailForm) {
       footerNote:'Note: The content is general fitness and training information and does not replace medical advice. Questions? Reach us at synastyles@gmail.com.',
       legalLinks:['Legal notice','Privacy','Terms','Cancellation'],
       cartEyebrow:'Cart', cartTitle:'Your selection', totalLabel:'Total', cartCheckoutBtn:'Go to checkout', cartClearBtn:'Empty cart',
-      checkoutTitle:'Complete your order', codeLabelHtml:'Discount or creator code <span>(optional)</span>', codePlaceholder:'Your code', applyBtn:'Apply', emailLabel:'Email for delivery', checkoutSubmitInitial:'Continue',
+      checkoutTitle:'Complete your order', codeLabelHtml:'Discount or creator code <span>(optional)</span>', codePlaceholder:'e.g. LAUNCH20', applyBtn:'Apply', emailLabel:'Email for delivery', checkoutSubmitInitial:'Continue',
       legalContentHtml:'I understand that these are digital products with general fitness and training information — not medical advice, and results are not guaranteed.',
       legalAcceptHtml:'I have read and accept the <a href="agb.html" target="_blank" rel="noopener">Terms (AGB)</a>, the <a href="datenschutz.html" target="_blank" rel="noopener">Privacy Policy</a> and the <a href="widerruf.html" target="_blank" rel="noopener">Cancellation Policy</a>.',
       skipLink:'Skip to content',
@@ -632,7 +651,11 @@ if (emailForm) {
     if (t.heroChipPlan) { const chip = $('.hero-chip.plan'); if (chip) { const b = chip.querySelector('b'); const s = chip.querySelector('span'); if (b) b.textContent = t.heroChipPlan[0]; if (s) s.textContent = t.heroChipPlan[1]; } }
     if (t.heroChipPrice) text('.hero-chip.price', t.heroChipPrice);
     if (t.valueStrip) all('.value-strip > div').forEach((item, i) => { const v = t.valueStrip[i]; if (!v) return; const s = item.querySelector('span'); const b = item.querySelector('strong'); if (s) s.textContent = v[0]; if (b) b.textContent = v[1]; });
+    if (t.tabs) all('#sectionTabs a').forEach((a, i) => { if (t.tabs[i]) a.textContent = t.tabs[i]; });
     text('#pakete .eyebrow', t.packagesEyebrow); text('#pakete h2', t.packagesTitle); text('#pakete .section-head p', t.packagesText);
+    // 30-Day Challenge Sektion
+    text('#challenge .eyebrow', t.challengeEyebrow); text('#challenge h2', t.challengeTitle); text('#challenge .section-head p', t.challengeText);
+    if (t.challengeCard) { const cc = $('#challenge .challenge-card'); if (cc) { const p = t.challengeCard; const label = cc.querySelector('.package-label'); const h = cc.querySelector('h3'); const desc = cc.querySelector('p'); const b = cc.querySelector('button'); if (label) label.textContent = p[0]; if (h) h.textContent = p[1]; if (desc) desc.textContent = p[2]; if (b) b.textContent = p[3]; cc.querySelectorAll('ul li').forEach((li, j) => { if (p[4] && p[4][j]) li.textContent = p[4][j]; }); const rib = cc.querySelector('.ribbon'); if (rib && t.challengeRibbon) rib.textContent = t.challengeRibbon; } }
     all('.package-card').forEach((card, i) => { const p = packageText[lang][i]; if (!p) return; const label = card.querySelector('.package-label'); const h = card.querySelector('h3'); const desc = card.querySelector('p'); const b = card.querySelector('button'); if (label) label.textContent = p[0]; if (h) h.textContent = p[1]; if (desc) desc.textContent = p[2]; if (b) b.textContent = p[3]; card.querySelectorAll('ul li').forEach((li, j) => { if (p[4] && p[4][j]) li.textContent = p[4][j]; }); });
     if (t.ribbon) text('.package-card .ribbon', t.ribbon);
     text('#add-ons .eyebrow', t.addonsEyebrow); text('#add-ons h2', t.addonsTitle); text('#add-ons .section-head p', t.addonsText);
@@ -654,6 +677,7 @@ if (emailForm) {
     // Einwilligungszeile nur setzen, wenn dort keine dynamische Statusmeldung steht.
     const nlStatus = $('#newsletterStatus');
     if (nlStatus && !nlStatus.classList.contains('ok') && !nlStatus.classList.contains('error')) nlStatus.textContent = t.nlConsent;
+    if (t.nlFreebieHtml) html('#nlFreebie', t.nlFreebieHtml);
     // Ablauf-Schritte
     if (t.steps) all('#ablauf .step-card').forEach((card, i) => { const s = t.steps[i]; if (!s) return; const h = card.querySelector('h3'); const sp = card.querySelector('span'); if (h) h.textContent = s[0]; if (sp) sp.textContent = s[1]; });
     // Kontakt-Sektion inkl. Formular und TikTok-Button
@@ -717,4 +741,38 @@ if (emailForm) {
     if (toggle) toggle.addEventListener('click', () => apply((readLang() || 'de') === 'de' ? 'en' : 'de'));
     document.querySelectorAll('[data-lang-choice]').forEach(btn => btn.addEventListener('click', () => { apply(btn.getAttribute('data-lang-choice') || 'de'); if (modal) modal.hidden = true; }));
   });
+})();
+
+/* ===================== Section-Tabs: Scrollspy ===================== */
+(function sectionTabs() {
+  const bar = document.getElementById('sectionTabs');
+  if (!bar) return;
+  const links = Array.from(bar.querySelectorAll('a[href^="#"]'));
+  const targets = links
+    .map(a => ({ a, sec: document.querySelector(a.getAttribute('href')) }))
+    .filter(x => x.sec);
+  if (!targets.length) return;
+  let lastActive = null;
+  function setActive() {
+    const y = window.scrollY + 200; // Offset: Header + Tab-Leiste
+    let current = null;
+    for (const t of targets) { if (t.sec.offsetTop <= y) current = t; }
+    const id = current ? current.sec.id : null;
+    if (id === lastActive) return;
+    lastActive = id;
+    targets.forEach(t => t.a.classList.toggle('active', t === current));
+    // Aktiven Tab in der (mobil scrollbaren) Leiste sichtbar halten.
+    if (current && bar.scrollWidth > bar.clientWidth) {
+      const left = current.a.offsetLeft - (bar.clientWidth - current.a.offsetWidth) / 2;
+      bar.scrollTo({ left: Math.max(0, left), behavior: 'smooth' });
+    }
+  }
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => { setActive(); ticking = false; });
+  }, { passive: true });
+  window.addEventListener('load', setActive);
+  document.addEventListener('DOMContentLoaded', setActive);
 })();

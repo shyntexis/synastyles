@@ -51,6 +51,16 @@
     </nav>
   </header>
 
+  <nav class="section-tabs" id="sectionTabs" aria-label="Bereiche">
+    <a href="#pakete">Pakete</a>
+    <a href="#challenge">Challenge</a>
+    <a href="#add-ons">Mini-Pläne</a>
+    <a href="#ablauf">Ablauf</a>
+    <a href="#faq">FAQ</a>
+    <a href="#newsletter">Newsletter</a>
+    <a href="#kontakt">Kontakt</a>
+  </nav>
+
   <main id="main">
     <section id="top" class="hero">
       <div class="hero-copy" data-reveal>
@@ -100,7 +110,7 @@
         <span class="eyebrow">Coaching-Pakete</span>
         <h2>Wähle deinen Plan.</h2>
         <p>Faire Launch-Preise zum Start. Du zahlst wenig, bekommst aber einen klaren, umsetzbaren Plan. Die Buttons legen deine Auswahl direkt in den Warenkorb; der Checkout leitet zur sicheren Stripe-Zahlung weiter.</p>
-        <p class="launch-hint" id="launchHint"><span class="launch-badge">Launch</span> Hast du einen Rabatt- oder Creator-Code? Löse ihn direkt im Checkout ein.</p>
+        <p class="launch-hint" id="launchHint"><span class="launch-badge">Launch</span> Rabattcode <strong>LAUNCH20</strong> = 20 % auf alles — direkt im Checkout einlösen.</p>
       </div>
 
       <div class="package-grid">
@@ -153,6 +163,28 @@
       </div>
     </section>
 
+    <section id="challenge" class="challenge-section">
+      <div class="section-head narrow" data-reveal>
+        <span class="eyebrow">Neu · Programm</span>
+        <h2>Die 30-Day Challenge.</h2>
+        <p>Ein Monat, ein Plan — und etwas, das dich dranbleiben lässt. Vier Wochenblöcke mit klarer Progression, dazu ein druckbarer Tracker zum Abhaken.</p>
+      </div>
+      <article class="package-card featured challenge-card" data-reveal>
+        <div class="ribbon">Neu</div>
+        <div class="package-label">Programm · 30 Tage</div>
+        <h3>30-Day Challenge</h3>
+        <p>Vier Wochen mit festem Fahrplan, Check-ins und Progression — plus druckbarer 30-Tage-Tracker für jeden Tag.</p>
+        <div class="price"><span>Launch</span><strong>€9</strong></div>
+        <ul>
+          <li>4 Wochenblöcke mit klarer Progression</li>
+          <li>Druckbarer 30-Tage-Tracker</li>
+          <li>Check-ins: woran du Fortschritt erkennst</li>
+          <li>Plan B für verpasste Tage</li>
+        </ul>
+        <button class="button full primary add-to-cart" type="button" data-product="challenge-30">In den Warenkorb</button>
+      </article>
+    </section>
+
     <section id="add-ons" class="addons-section">
       <div class="section-head narrow" data-reveal>
         <span class="eyebrow">Einzelne Mini-Pläne</span>
@@ -165,6 +197,7 @@
         <button class="addon-card add-to-cart" type="button" data-product="cardio-plan" data-reveal><b>€4</b><span>Cardio Plan</span><small>Cardio ohne planloses Rennen</small><em class="addon-add">In den Warenkorb</em></button>
         <button class="addon-card add-to-cart" type="button" data-product="sleep-plan" data-reveal><b>€4</b><span>Schlaf &amp; Erholung</span><small>Besser regenerieren</small><em class="addon-add">In den Warenkorb</em></button>
         <button class="addon-card add-to-cart" type="button" data-product="form-checklist" data-reveal><b>€3</b><span>Technik-Checkliste</span><small>Saubere Ausführung im Gym</small><em class="addon-add">In den Warenkorb</em></button>
+        <button class="addon-card add-to-cart" type="button" data-product="meal-prep" data-reveal><b>€4</b><span>Meal-Prep Cheatsheet</span><small>1× kochen, Woche versorgt</small><em class="addon-add">In den Warenkorb</em></button>
       </div>
     </section>
 
@@ -224,10 +257,7 @@
         <p>Diese Pläne sind in Vorbereitung. Trag dich in den Newsletter ein, dann sagen wir dir Bescheid, sobald sie live sind — oft zuerst mit einem Launch-Rabatt.</p>
       </div>
       <div class="roadmap-grid" data-reveal>
-        <div class="roadmap-card"><span class="roadmap-tag">Geplant</span><h3>7-Day Gym Reset</h3><p>Eine Woche klare Struktur zum Wiedereinstieg — Tag für Tag.</p></div>
-        <div class="roadmap-card"><span class="roadmap-tag">Geplant</span><h3>30-Day Challenge</h3><p>Ein Monat mit festem Fahrplan, Check-ins und Progression.</p></div>
         <div class="roadmap-card"><span class="roadmap-tag">Geplant</span><h3>Home-Workout Plan</h3><p>Training ohne Geräte für zuhause oder unterwegs.</p></div>
-        <div class="roadmap-card"><span class="roadmap-tag">Geplant</span><h3>Meal-Prep Cheatsheet</h3><p>Vorkochen ohne Stress: Baukasten statt starrer Rezepte.</p></div>
         <div class="roadmap-card"><span class="roadmap-tag">Geplant</span><h3>Bulk / Cut Starter</h3><p>Auf- oder Abbau sauber aufgesetzt, mit realistischer Kalorienlogik.</p></div>
         <div class="roadmap-card"><span class="roadmap-tag">Idee</span><h3>Video-Analyse Light</h3><p>Schick ein kurzes Übungsvideo, bekomm konkretes Technik-Feedback.</p></div>
       </div>
@@ -275,6 +305,7 @@
           <span class="eyebrow">Newsletter</span>
           <h2>Trainings-Tipps &amp; Launch-Angebote.</h2>
           <p>Ein kurzer Impuls ab und zu: umsetzbare Tipps, neue Pläne und Rabattcodes zuerst. Kein Spam, jederzeit abbestellbar.</p>
+          <p class="nl-freebie" id="nlFreebie"><span class="launch-badge">Gratis</span> Als Dankeschön: der <strong>7-Day Gym Reset</strong> — 7 Tage klare Struktur zum (Wieder-)Einstieg. Dein persönlicher Zugangslink erscheint direkt nach der Anmeldung.</p>
         </div>
         <form class="newsletter-form" id="newsletterForm" novalidate>
           <label class="sr-only" for="newsletterEmail">E-Mail-Adresse</label>
@@ -337,7 +368,7 @@
       <div class="checkout-discount">
         <label for="checkoutCode">Rabatt- oder Creator-Code <span>(optional)</span></label>
         <div class="discount-row">
-          <input id="checkoutCode" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Dein Code" />
+          <input id="checkoutCode" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="z. B. LAUNCH20" />
           <button class="button ghost" type="button" id="applyCode">Anwenden</button>
         </div>
         <p class="discount-status" id="discountStatus"></p>

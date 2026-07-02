@@ -209,7 +209,9 @@ function extractPlanInner(slug) {
 function statusPayload(req) {
   const products = loadProducts().products || [];
   const hasSecret = stripe.stripeConfigured();
-  const missing = products.filter((p) => !stripePriceId(p)).map((p) => p.stripePriceEnvKey);
+  // Gratis-Produkte (z. B. Newsletter-Reset) brauchen keine Stripe-Price-ID und
+  // dürfen den Live-Modus nicht auf "demo" kippen.
+  const missing = products.filter((p) => p.priceCents > 0 && !stripePriceId(p)).map((p) => p.stripePriceEnvKey);
   const user = auth.readSession(req);
   return {
     mode: hasSecret && missing.length === 0 ? 'live' : 'demo',
@@ -267,7 +269,8 @@ async function handleDiscountValidate(req, res) {
 async function handleCreateSession(req, res) {
   const payload = await readJson(req);
   const byId = productMap();
-  const ids = Array.isArray(payload.items) ? [...new Set(payload.items.filter((id) => byId[id]))] : [];
+  // Gratis-Produkte sind nicht kaufbar — still herausfiltern (die UI bietet sie nie an).
+  const ids = Array.isArray(payload.items) ? [...new Set(payload.items.filter((id) => byId[id] && byId[id].priceCents > 0))] : [];
   const user = auth.readSession(req);
   const email = (user && user.email) || (typeof payload.email === 'string' ? payload.email.trim() : '');
   if (!ids.length) return sendJson(res, 400, { error: 'empty cart' });
@@ -321,9 +324,21 @@ async function handleCreateSession(req, res) {
   }
 }
 
+// Gratis-Deliverable für Newsletter-Abonnenten: persönlicher, signierter Zugangslink
+// (v2-Delivery-Token, an die E-Mail gebunden — funktioniert ohne DB-Eintrag).
+const FREE_NEWSLETTER_PRODUCT_ID = 'reset-7';
+function newsletterFreeAccess(email) {
+  try {
+    const p = productMap()[FREE_NEWSLETTER_PRODUCT_ID];
+    if (!p) return null;
+    const token = auth.makeDeliveryToken({ email, productId: p.id, sessionId: 'newsletter' });
+    return { id: p.id, title: p.title, accessPath: '/access/' + token };
+  } catch (e) { return null; }
+}
+
 async function handleNewsletter(req, res) {
   const body = await readJson(req);
-  const email = typeof body.email === 'string' ? body.email.trim() : '';
+  const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
   const source = typeof body.source === 'string' ? body.source.trim().slice(0, 80) : 'website';
   const interest = typeof body.interest === 'string' ? body.interest.trim().slice(0, 80) : '';
   // Lightweight, forgiving email check — never 500 on a user typo.
@@ -340,7 +355,8 @@ async function handleNewsletter(req, res) {
       ok: true, already: !!r.already,
       message: r.already
         ? 'Du bist bereits eingetragen — danke, dass du dabei bist!'
-        : 'Eingetragen! Du bekommst Trainings-Tipps und Launch-Angebote von ZENITH.'
+        : 'Eingetragen! Du bekommst Trainings-Tipps und Launch-Angebote von ZENITH.',
+      freeAccess: newsletterFreeAccess(email)
     });
   } catch (e) {
     return sendJson(res, 200, { ok: false, error: 'server', message: 'Eintragen hat gerade nicht geklappt. Bitte später erneut versuchen.' });
